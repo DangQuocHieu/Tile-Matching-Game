@@ -8,7 +8,7 @@ public enum TurnType
 {
     PlayerTurn, EnemyTurn
 }
-public class TurnManager : Singleton<TurnManager>
+public class TurnManager : Singleton<TurnManager>, IMessageHandle
 {
     [SerializeField] private TurnType _currentTurn;
     public TurnType CurrentTurn => _currentTurn;
@@ -24,6 +24,19 @@ public class TurnManager : Singleton<TurnManager>
         StartCoroutine(PlayerTurnCoroutine());
 
     }
+
+    private void OnEnable()
+    {
+        MessageManager.AddSubcriber(GameMessageType.OnCurrentTurnPaused, this);
+        MessageManager.AddSubcriber(GameMessageType.OnCurrentTurnEnd, this);
+    }
+
+    private void OnDisable()
+    {
+        MessageManager.RemoveSubcriber(GameMessageType.OnCurrentTurnPaused, this);
+        MessageManager.RemoveSubcriber(GameMessageType.OnCurrentTurnEnd, this);
+    }
+
     public IEnumerator PlayerTurnCoroutine()
     {
         _currentTurn = TurnType.PlayerTurn;
@@ -72,6 +85,7 @@ public class TurnManager : Singleton<TurnManager>
 
     private void StartNextTurn()
     {
+        inProgress = true;
         if (_currentTurn == TurnType.PlayerTurn)
         {
             StartCoroutine(EnemyTurnCoroutine());
@@ -79,6 +93,25 @@ public class TurnManager : Singleton<TurnManager>
         else
         {
             StartCoroutine(PlayerTurnCoroutine());
+        }
+    }
+
+    private void PauseCurrentTurn()
+    {
+        inProgress = false;
+    }
+    
+    public void Handle(Message message)
+    {
+        switch(message.type)
+        {
+            case GameMessageType.OnCurrentTurnPaused:
+                PauseCurrentTurn();
+                break;
+            case GameMessageType.OnCurrentTurnEnd:
+                EndCurrentTurn();
+                StartNextTurn();
+                break;
         }
     }
 }

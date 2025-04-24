@@ -37,8 +37,10 @@ public class EnemyStat : UnitStatHandler, IMessageHandle
                 AddManaPoint(counter);
                 break;
             case DiamondType.Rage:
+                AddRagePoint(counter);
                 break;
             case DiamondType.Shield:
+                AddShieldPoint(counter);
                 break;
             case DiamondType.Steal:
                 break;

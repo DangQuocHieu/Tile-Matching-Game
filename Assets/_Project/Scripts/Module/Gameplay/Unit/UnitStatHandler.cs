@@ -3,11 +3,17 @@ using UnityEngine;
 public abstract class UnitStatHandler : MonoBehaviour
 {
     [SerializeField] protected UnitStat _stat;
+    public UnitStat Stat => _stat;
     [SerializeField] protected int _currentHealthPoint;
+    public int CurrentHealthPoint => _currentHealthPoint;
     [SerializeField] protected int _currentManaPoint;
+    public int CurrentManaPoint => _currentManaPoint;
     [SerializeField] protected int _currentRagePoint;
+    public int CurrentRagePoint => _currentRagePoint;
     [SerializeField] protected int _shieldPoint;
     [SerializeField] protected int _attackDamage;
+
+
 
     protected virtual void Awake()
     {

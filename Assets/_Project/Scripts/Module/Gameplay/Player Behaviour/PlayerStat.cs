@@ -4,6 +4,7 @@ using UnityEngine;
 public class PlayerStat : UnitStatHandler, IMessageHandle
 {
 
+    
     void OnEnable()
     {
         MessageManager.AddSubcriber(GameMessageType.OnPlayerApplyEffect, this);
@@ -16,12 +17,29 @@ public class PlayerStat : UnitStatHandler, IMessageHandle
 
     public override void ApplyEffect(DiamondType type, int counter)
     {
-        throw new System.NotImplementedException();
+        switch (type)
+        {
+            case DiamondType.Attack:
+                break;
+            case DiamondType.Health:
+                AddHealthPoint(counter);
+                break;
+            case DiamondType.Mana:
+                AddManaPoint(counter);
+                break;
+            case DiamondType.Rage:
+                AddRagePoint(counter);
+                break;
+            case DiamondType.Shield:
+                AddShieldPoint(counter);
+                break;
+            case DiamondType.Steal:
+                break;
+        }
     }
-
     public void Handle(Message message)
     {
-        switch(message.type)
+        switch (message.type)
         {
             case GameMessageType.OnPlayerApplyEffect:
                 DiamondType type = (DiamondType)message.data[0];

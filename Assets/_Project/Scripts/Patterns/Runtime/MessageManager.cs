@@ -3,7 +3,6 @@ using UnityEngine;
 
 public enum GameMessageType
 {
-
     OnPlayerTurnStart,
     OnEnemyTurnStart,
     OnTurnStartDelay,
@@ -14,7 +13,9 @@ public enum GameMessageType
     OnSwappedFail,
     OnDiamondMatched,
     OnPlayerApplyEffect,
-    OnEnemyApplyEffect
+    OnEnemyApplyEffect,
+    OnCurrentTurnPaused,
+    OnCurrentTurnEnd
 }
 
 public class Message

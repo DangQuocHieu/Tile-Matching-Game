@@ -6,14 +6,7 @@ public class Singleton<T> : MonoBehaviour where T : Component
     public static T Instance => _instance;
     protected virtual void Awake()
     {
-        if(_instance == null)
-        {
-            _instance = this as T;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        _instance = this as T;
     }
 
 }
