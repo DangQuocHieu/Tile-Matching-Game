@@ -9,6 +9,9 @@ public class UnitStat : ScriptableObject
     public int MaxManaPoint => _maxManaPoint;
     [SerializeField] private int _maxRagePoint;
     public int MaxRagePoint => _maxRagePoint;
+    [SerializeField] private int _maxShieldPoint;
+    public int MaxShieldPoint => _maxShieldPoint;
+    
     //Base value when match 1 diamonds.
     [SerializeField] private int _baseDamage;
     public int BaseDamage => _baseDamage;

@@ -5,16 +5,22 @@ using UnityEngine;
 
 public class EnemyController : Singleton<EnemyController>, IMessageHandle
 {
+    private GameUnit _gameUnit;
+    void Start()
+    {
+        _gameUnit = GetComponent<GameUnit>();
+    }
 
     void OnEnable()
     {
-        MessageManager.AddSubcriber(GameMessageType.OnEnemyTurnStart, this);
+        MessageManager.AddSubcriber(GameMessageType.OnTurnStart, this);
     }
 
     void OnDisable()
     {
-        MessageManager.RemoveSubcriber(GameMessageType.OnEnemyTurnStart, this);
+        MessageManager.RemoveSubcriber(GameMessageType.OnTurnStart, this);
     }
+
     private void PerformAction()
     {
         List<Tuple<GameObject, GameObject>> validMoves = BoardManager.Instance.GenerateValidMoves();
@@ -29,11 +35,17 @@ public class EnemyController : Singleton<EnemyController>, IMessageHandle
 
     public void Handle(Message message)
     {
-        switch(message.type)
+        switch (message.type)
         {
-            case GameMessageType.OnEnemyTurnStart:
-                PerformActionWithDelay(2f);
+            case GameMessageType.OnTurnStart:
+                Side currentSide = (Side)message.data[0];
+                if (_gameUnit.Side == currentSide)
+                {
+                    PerformActionWithDelay(5f);
+                }
                 break;
         }
     }
+
+
 }

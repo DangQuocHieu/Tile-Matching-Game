@@ -20,7 +20,6 @@ public class BoardManager : Singleton<BoardManager>, IMessageHandle
     private MatchFinder _matchFinder;
     private BoardProcessor _boardProcessor;
     private HashSet<Diamond> _allMatches = new HashSet<Diamond>();
-    private Dictionary<DiamondType, int> _matchDiamondCount = new Dictionary<DiamondType, int>();
     void Start()
     {
         _matchFinder = GetComponent<MatchFinder>();
@@ -63,8 +62,7 @@ public class BoardManager : Singleton<BoardManager>, IMessageHandle
                 StartCoroutine(ProcessSwapping(previousDiamond, currentDiamond));
                 break;
             case GameMessageType.OnTurnStartDelay:
-                _diamondContainer.gameObject.SetActive(true);
-                ResetDiamondCount();
+                ShowDiamondBoard();
                 break;
         }
     }
@@ -82,23 +80,21 @@ public class BoardManager : Singleton<BoardManager>, IMessageHandle
             MessageManager.SendMessage(new Message(GameMessageType.OnCurrentTurnPaused));
             while (_allMatches != null && _allMatches.Count > 0)
             {
-                yield return _boardProcessor.ClearAllMatchDiamond(_allMatches, _matchDiamondCount);
+                yield return _boardProcessor.ClearAllMatchDiamond(_allMatches);
                 yield return _boardProcessor.CollapseBoard(_board);
                 yield return _boardProcessor.RefillBoard(_board, _diamondContainer);
                 _allMatches = _matchFinder.FindMatches(_boardWidth, _boardHeight, _board);
             }
-            //Diamond Completely Match
-            yield return ResolveMatches();
-            yield return ApplyEffect();
-            //End current turn continously
-            MessageManager.SendMessage(new Message(GameMessageType.OnCurrentTurnEnd));
+            yield return new WaitForSeconds(2f);
+            MessageManager.SendMessage(new Message(GameMessageType.OnBoardProcessed));
+            HideDiamondBoard();
         }
         else
         {
             yield return _boardProcessor.Swap(previousDiamond, currentDiamond, () =>
             {
                 SwapDiamondValue(previousDiamond.transform.position, currentDiamond.transform.position);
-                MessageManager.SendMessage(new Message(GameMessageType.OnSwappedFail));
+                MessageManager.SendMessage(new Message(GameMessageType.OnDiamondSwappedFail));
             });
 
         }
@@ -110,39 +106,7 @@ public class BoardManager : Singleton<BoardManager>, IMessageHandle
         _board[(int)prev.y, (int)prev.x] = _board[(int)curr.y, (int)curr.x];
         _board[(int)curr.y, (int)curr.x] = temp;
     }
-    private IEnumerator ResolveMatches()
-    {
-        yield return new WaitForSeconds(1f);
-        _diamondContainer.gameObject.SetActive(false);
-        MessageManager.SendMessage(new Message(GameMessageType.OnMatchResolve, new object[] { _matchDiamondCount }));
-        yield return null;
-    }
 
-    private IEnumerator ApplyEffect()
-    {
-        float delay = 1f;
-        yield return new WaitForSeconds(delay);
-        TurnType currentTurn = TurnManager.Instance.CurrentTurn;
-        if (currentTurn == TurnType.EnemyTurn)
-        {
-            foreach (var item in _matchDiamondCount)
-            {
-                MessageManager.SendMessage(new Message(GameMessageType.OnEnemyApplyEffect, new object[] { item.Key, item.Value }));
-                yield return new WaitForSeconds(delay);
-            }
-        }
-        else
-        {
-            if (_matchDiamondCount.Count > 0)
-            {
-                foreach (var item in _matchDiamondCount)
-                {
-                    MessageManager.SendMessage(new Message(GameMessageType.OnPlayerApplyEffect, new object[] { item.Key, item.Value }));
-                    yield return new WaitForSeconds(delay);
-                }
-            }
-        }
-    }
     public List<Tuple<GameObject, GameObject>> GenerateValidMoves()
     {
         List<Tuple<GameObject, GameObject>> validMoves = new List<Tuple<GameObject, GameObject>>();
@@ -182,9 +146,14 @@ public class BoardManager : Singleton<BoardManager>, IMessageHandle
         return validMoves;
     }
 
-    private void ResetDiamondCount()
+    public void ShowDiamondBoard()
     {
-        _matchDiamondCount.Clear();
+        _diamondContainer.gameObject.SetActive(true);
+    }
+
+    public void HideDiamondBoard()
+    {
+        _diamondContainer.gameObject.SetActive(false);
     }
 
 }

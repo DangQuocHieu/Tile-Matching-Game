@@ -44,5 +44,11 @@ TagManager:
   - name: Highlight
     uniqueID: 3048478791
     locked: 0
+  - name: Unit
+    uniqueID: 2720614869
+    locked: 0
+  - name: UnitAttacking
+    uniqueID: 3378538189
+    locked: 0
   m_RenderingLayers:
   - Default

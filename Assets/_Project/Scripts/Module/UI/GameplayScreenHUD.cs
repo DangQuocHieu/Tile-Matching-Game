@@ -24,10 +24,10 @@ public class GameplayScreenHUD : MonoBehaviour, IMessageHandle
     [SerializeField] private StatBarHUD _enemyStatBarHUD;
 
     [Header("Animation Config")]
-    [SerializeField] MoveToAnimationSO _moveToAnimationSO;
+    [SerializeField] ScaleAmimationSO _scaleAnim;
 
-    private PlayerStat _playerStat;
-    private EnemyStat _enemyStat;
+    private UnitStatHandler _playerStat;
+    private UnitStatHandler _enemyStat;
     void Awake()
     {
         for (int i = 0; i < _diamondSprites.Length; i++)
@@ -35,21 +35,20 @@ public class GameplayScreenHUD : MonoBehaviour, IMessageHandle
             _spriteDictionary.Add(_diamondTypes[i], _diamondSprites[i]);
         }
 
-    }
 
+    }
     void OnEnable()
     {
         MessageManager.AddSubcriber(GameMessageType.OnTurnInProgress, this);
         MessageManager.AddSubcriber(GameMessageType.OnTurnStartDelay, this);
-        MessageManager.AddSubcriber(GameMessageType.OnMatchResolve, this);
-        MessageManager.AddSubcriber(GameMessageType.OnEnemyApplyEffect, this);
-        MessageManager.AddSubcriber(GameMessageType.OnPlayerApplyEffect, this);
+        MessageManager.AddSubcriber(GameMessageType.OnMatchStatUIUpdated, this);
+        MessageManager.AddSubcriber(GameMessageType.OnApplyEffect, this);
     }
 
     void Start()
     {
-        _playerStat = PlayerController.Instance.GetComponent<PlayerStat>();
-        _enemyStat = EnemyController.Instance.GetComponent<EnemyStat>();
+        _playerStat = PlayerController.Instance.GetComponent<UnitStatHandler>();
+        _enemyStat = EnemyController.Instance.GetComponent<UnitStatHandler>();
         InitStatHUD();
     }
 
@@ -63,9 +62,8 @@ public class GameplayScreenHUD : MonoBehaviour, IMessageHandle
     {
         MessageManager.RemoveSubcriber(GameMessageType.OnTurnInProgress, this);
         MessageManager.RemoveSubcriber(GameMessageType.OnTurnStartDelay, this);
-        MessageManager.RemoveSubcriber(GameMessageType.OnMatchResolve, this);
-        MessageManager.RemoveSubcriber(GameMessageType.OnEnemyApplyEffect, this);
-        MessageManager.RemoveSubcriber(GameMessageType.OnPlayerApplyEffect, this);
+        MessageManager.RemoveSubcriber(GameMessageType.OnMatchStatUIUpdated, this);
+        MessageManager.RemoveSubcriber(GameMessageType.OnApplyEffect, this);
     }
 
     public void Handle(Message message)
@@ -82,16 +80,14 @@ public class GameplayScreenHUD : MonoBehaviour, IMessageHandle
                 ResetMatchDiamondUI();
                 ResetIndex();
                 break;
-            case GameMessageType.OnMatchResolve:
-                Dictionary<DiamondType, int> matchDiamondCount = (Dictionary<DiamondType, int>)message.data[0];
-                DisplayMatchDiamondUI(matchDiamondCount);
+            case GameMessageType.OnMatchStatUIUpdated:
+                SortedDictionary<DiamondType, int> dictionary = (SortedDictionary<DiamondType, int>)message.data[0];
+                DisplayMatchStatUI(dictionary);
                 break;
-            case GameMessageType.OnEnemyApplyEffect:
-                ApplyEffectUI(EnemyController.Instance.transform);
+            case GameMessageType.OnApplyEffect:
+                ApplyEffectUI();
                 break;
-            case GameMessageType.OnPlayerApplyEffect:
-                ApplyEffectUI(PlayerController.Instance.transform);
-                break;
+            
         }
     }
 
@@ -101,16 +97,11 @@ public class GameplayScreenHUD : MonoBehaviour, IMessageHandle
         _enemyStatBarHUD.Init(_enemyStat.Stat.MaxHealthPoint, _enemyStat.Stat.MaxManaPoint, _enemyStat.Stat.MaxRagePoint);
     }
 
-    private void ApplyEffectUI(Transform target)
+    private void ApplyEffectUI()
     {
-        Debug.Log("APPLY UI");
         Transform matchDiamondUI = _turnDataContainer.transform.GetChild(_currentIndex);
         ++_currentIndex;
-        Vector3 position = Camera.main.WorldToScreenPoint(target.transform.position);
-        _moveToAnimationSO.MoveTo(matchDiamondUI, position, () =>
-        {
-
-        });
+        _scaleAnim.ScaleOut(matchDiamondUI.gameObject);
     }
 
 
@@ -119,7 +110,7 @@ public class GameplayScreenHUD : MonoBehaviour, IMessageHandle
         _turnTimerText.text = Mathf.FloorToInt(time).ToString();
     }
 
-    private void DisplayMatchDiamondUI(Dictionary<DiamondType, int> matchedDiamonds)
+    private void DisplayMatchStatUI(SortedDictionary<DiamondType, int> matchedDiamonds)
     {
         foreach (var item in matchedDiamonds)
         {

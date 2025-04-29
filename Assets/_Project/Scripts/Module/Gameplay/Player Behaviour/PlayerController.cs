@@ -5,20 +5,23 @@ public class PlayerController : Singleton<PlayerController>, IMessageHandle
 {
     [SerializeField] private GameObject _previousDiamond;
     [SerializeField] private GameObject _currentDiamond;
-
     [SerializeField] private bool _disableControl = true;
+    private GameUnit _gameUnit;
+
+    void Start()
+    {
+        _gameUnit = GetComponent<GameUnit>();
+    }
     void OnEnable()
     {
-        MessageManager.AddSubcriber(GameMessageType.OnSwappedFail, this);
-        MessageManager.AddSubcriber(GameMessageType.OnPlayerTurnStart, this);
-        MessageManager.AddSubcriber(GameMessageType.OnEnemyTurnStart, this);
+        MessageManager.AddSubcriber(GameMessageType.OnDiamondSwappedFail, this);
+        MessageManager.AddSubcriber(GameMessageType.OnTurnStart, this);
     }
 
     void OnDisable()
     {
-        MessageManager.RemoveSubcriber(GameMessageType.OnSwappedFail, this);
-        MessageManager.RemoveSubcriber(GameMessageType.OnPlayerTurnStart, this);
-        MessageManager.RemoveSubcriber(GameMessageType.OnEnemyTurnStart, this);
+        MessageManager.RemoveSubcriber(GameMessageType.OnDiamondSwappedFail, this);
+        MessageManager.RemoveSubcriber(GameMessageType.OnTurnStart, this);
     }
 
     void Update()
@@ -51,16 +54,14 @@ public class PlayerController : Singleton<PlayerController>, IMessageHandle
     {
         switch (message.type)
         {
-            case GameMessageType.OnSwappedFail:
+            case GameMessageType.OnDiamondSwappedFail:
                 _previousDiamond = default;
                 _currentDiamond = default;
                 EnableControl();
                 break;
-            case GameMessageType.OnEnemyTurnStart:
-                DisableControl();
-                break;
-            case GameMessageType.OnPlayerTurnStart:
-                EnableControl();
+            case GameMessageType.OnTurnStart:
+                Side currentSide = (Side)message.data[0];
+                if(_gameUnit.Side == currentSide) EnableControl();
                 break;
         }
     }

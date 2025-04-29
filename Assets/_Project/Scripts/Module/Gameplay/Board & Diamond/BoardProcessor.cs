@@ -64,6 +64,7 @@ public class BoardProcessor : MonoBehaviour
                 if (board[y, x] != null)
                 {
                     Destroy(board[y, x].gameObject);
+                    MessageManager.SendMessage(new Message(GameMessageType.OnDiamondDestroy, new object[] {board[y,x].DiamondType}));
                     board[y, x] = null;
                 }
             }
@@ -119,21 +120,16 @@ public class BoardProcessor : MonoBehaviour
         yield return new WaitForEndOfFrame();
     }
 
-    public IEnumerator ClearAllMatchDiamond(HashSet<Diamond> allMatches, Dictionary<DiamondType, int> matchDiamondCount)
+    public IEnumerator ClearAllMatchDiamond(HashSet<Diamond> allMatches)
     {
         Sequence sequence = DOTween.Sequence();
         foreach (var diamond in allMatches)
         {
             sequence.Join(_scaleAnim.ScaleOut(diamond.gameObject, () =>
             {
-                MessageManager.SendMessage(new Message(GameMessageType.OnDiamondMatched, new object[] { diamond.DiamondType }));
-                if (!matchDiamondCount.ContainsKey(diamond.DiamondType))
-                {
-                    matchDiamondCount[diamond.DiamondType] = 1;
-                }
-                else matchDiamondCount[diamond.DiamondType]++;
+                //Send Message: Diamond Destroy
                 Destroy(diamond.gameObject);
-
+                MessageManager.SendMessage(new Message(GameMessageType.OnDiamondDestroy, new object[] {diamond.DiamondType}));
             }));
         }
         yield return sequence.Play().WaitForCompletion();

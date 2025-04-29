@@ -11,13 +11,13 @@ public class DiamondHighlight : Singleton<DiamondHighlight>, IMessageHandle
     void OnEnable()
     {
         MessageManager.AddSubcriber(GameMessageType.OnDiamondSelected, this);
-        MessageManager.AddSubcriber(GameMessageType.OnSwappedFail, this);
+        MessageManager.AddSubcriber(GameMessageType.OnDiamondSwappedFail, this);
     }
 
     void OnDisable()
     {
         MessageManager.RemoveSubcriber(GameMessageType.OnDiamondSelected, this);
-        MessageManager.RemoveSubcriber(GameMessageType.OnSwappedFail, this);      
+        MessageManager.RemoveSubcriber(GameMessageType.OnDiamondSwappedFail, this);      
     }
 
     public void Handle(Message message)
@@ -28,7 +28,7 @@ public class DiamondHighlight : Singleton<DiamondHighlight>, IMessageHandle
                 Vector3 position = (Vector3)message.data[0];
                 Highlight(position);
                 break;
-            case GameMessageType.OnSwappedFail:
+            case GameMessageType.OnDiamondSwappedFail:
                 UnHighlight();
                 break;
 

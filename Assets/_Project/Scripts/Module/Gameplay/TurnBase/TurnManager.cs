@@ -1,17 +1,18 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
-
-public enum TurnType
+public enum Side
 {
-    PlayerTurn, EnemyTurn
+    LeftSide, RightSide
+    //LeftSide for player and RightSide for enemy
 }
 public class TurnManager : Singleton<TurnManager>, IMessageHandle
 {
-    [SerializeField] private TurnType _currentTurn;
-    public TurnType CurrentTurn => _currentTurn;
+    [SerializeField] private Side _currentSide;
+    public Side CurrentSide => _currentSide;
     [SerializeField] private float _turnDuration;
     public float TurnDuration => _turnDuration;
     [SerializeField] private float _turnStartDelay;
@@ -21,7 +22,7 @@ public class TurnManager : Singleton<TurnManager>, IMessageHandle
     protected override void Awake()
     {
         base.Awake();
-        StartCoroutine(PlayerTurnCoroutine());
+        StartCoroutine(LeftTurnCoroutine());
 
     }
 
@@ -37,24 +38,23 @@ public class TurnManager : Singleton<TurnManager>, IMessageHandle
         MessageManager.RemoveSubcriber(GameMessageType.OnCurrentTurnEnd, this);
     }
 
-    public IEnumerator PlayerTurnCoroutine()
+    public IEnumerator LeftTurnCoroutine()
     {
-        _currentTurn = TurnType.PlayerTurn;
+        _currentSide = Side.LeftSide;
         yield return TurnStartDelay();
-        MessageManager.SendMessage(new Message(GameMessageType.OnPlayerTurnStart));
         yield return _currentTurnCoroutine = StartCoroutine(TurnTimer());
     }
 
-    public IEnumerator EnemyTurnCoroutine()
+    public IEnumerator RightTurnCoroutine()
     {
-        _currentTurn = TurnType.EnemyTurn;
+        _currentSide = Side.RightSide;
         yield return TurnStartDelay();
-        MessageManager.SendMessage(new Message(GameMessageType.OnEnemyTurnStart));
         yield return _currentTurnCoroutine = StartCoroutine(TurnTimer());
     }
 
     private IEnumerator TurnTimer()
     {
+        MessageManager.SendMessage(new Message(GameMessageType.OnTurnStart, new object[] {CurrentSide}));
         float timeRemaining = _turnDuration;
         while (timeRemaining >= 0)
         {
@@ -71,7 +71,7 @@ public class TurnManager : Singleton<TurnManager>, IMessageHandle
 
     private IEnumerator TurnStartDelay()
     {
-        MessageManager.SendMessage(new Message(GameMessageType.OnTurnStartDelay, new object[] { _turnDuration, _turnStartDelay, _currentTurn }));
+        MessageManager.SendMessage(new Message(GameMessageType.OnTurnStartDelay, new object[] { _turnDuration, _turnStartDelay, _currentSide }));
         yield return new WaitForSeconds(_turnStartDelay);
     }
     private void EndCurrentTurn()
@@ -86,13 +86,13 @@ public class TurnManager : Singleton<TurnManager>, IMessageHandle
     private void StartNextTurn()
     {
         inProgress = true;
-        if (_currentTurn == TurnType.PlayerTurn)
+        if (_currentSide == Side.LeftSide)
         {
-            StartCoroutine(EnemyTurnCoroutine());
+            StartCoroutine(RightTurnCoroutine());
         }
         else
         {
-            StartCoroutine(PlayerTurnCoroutine());
+            StartCoroutine(LeftTurnCoroutine());
         }
     }
 
@@ -110,8 +110,13 @@ public class TurnManager : Singleton<TurnManager>, IMessageHandle
                 break;
             case GameMessageType.OnCurrentTurnEnd:
                 EndCurrentTurn();
-                StartNextTurn();
+                Invoke("StartNextTurn", 2f);
                 break;
         }
+    }
+
+    public void GetEnemyUnit(Side side)
+    {
+
     }
 }

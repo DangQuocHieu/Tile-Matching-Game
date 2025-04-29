@@ -3,19 +3,19 @@ using UnityEngine;
 
 public enum GameMessageType
 {
-    OnPlayerTurnStart,
-    OnEnemyTurnStart,
-    OnTurnStartDelay,
+    OnTurnStartDelay, //Wait for seconds then start current turn
+    OnTurnStart,
     OnTurnInProgress,
-    OnMatchResolve,
     OnDiamondSelected,
     OnDiamondSwapped,
-    OnSwappedFail,
-    OnDiamondMatched,
-    OnPlayerApplyEffect,
-    OnEnemyApplyEffect,
+    OnDiamondDestroy,
+    OnDiamondSwappedFail,
+    OnBoardProcessed, //Send this message when all diamond matched in current turn
+    OnMatchStatUIUpdated,
+    OnApplyEffect,
+    OnAttack,
     OnCurrentTurnPaused,
-    OnCurrentTurnEnd
+    OnCurrentTurnEnd,
 }
 
 public class Message
@@ -66,6 +66,17 @@ public static class MessageManager
             for (int i = subscribers[message.type].Count - 1; i > -1; i--)
                 subscribers[message.type][i].Handle(message);
     }
+
+    public static void SendMessageWithDelay(Message message, float delayDuration)
+    {
+        float timeElapsed = 0;
+        while(timeElapsed < delayDuration)
+        {
+            timeElapsed += Time.deltaTime;
+        }
+        SendMessage(message);
+    }
+
     public static void OnBeforeSerialize()
     {
         _keys.Clear();
