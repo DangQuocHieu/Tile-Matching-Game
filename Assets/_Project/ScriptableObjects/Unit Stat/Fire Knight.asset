@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26f733f5e129dc7448cbc12ec908dd4c, type: 3}
+  m_Name: Fire Knight
+  m_EditorClassIdentifier: 
+  _unitId: Fire Knight
+  _maxHealthPoint: 500
+  _maxManaPoint: 200
+  _maxRagePoint: 200
+  _baseHealthPoint: 20
+  _baseManaPoint: 20
+  _baseRagePoint: 20
+  _baseDamage: 100
+  _baseShieldPoint: 20
+  _ragePointToIncreaseDamage: 100
+  _damageScale: 1.5

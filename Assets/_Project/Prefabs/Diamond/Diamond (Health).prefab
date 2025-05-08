@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5904483570039308933}
   - component: {fileID: 4882244443930854243}
   - component: {fileID: 1204170481999342109}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Diamond (Health)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

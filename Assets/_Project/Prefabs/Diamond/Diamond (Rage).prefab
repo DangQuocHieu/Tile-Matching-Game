@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7118633007233797498}
   - component: {fileID: 2941285963250672322}
   - component: {fileID: -1131658676945837072}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Diamond (Rage)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

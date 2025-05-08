@@ -1,7 +1,9 @@
+using System.Collections;
+
 public class ShieldEffect : IEffect
 {
-    public void ApplyEffect(UnitStatHandler statHandler, int value)
+    public IEnumerator ApplyEffect(UnitStatHandler statHandler, int value)
     {
-        statHandler.AddShieldPoint(value);
+        yield return statHandler.AddShieldPoint(value);
     }
 }

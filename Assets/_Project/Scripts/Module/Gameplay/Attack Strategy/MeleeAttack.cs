@@ -1,30 +1,51 @@
 using System.Collections;
+using System.Collections.Generic;
 using DG.Tweening;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "MeleeAttack", menuName = "Scriptable Objects/AttackStrategy/MeleeAttack")]
 public class MeleeAttack : AttackStrategySO
 {
-    [SerializeField] private float _dashTime = 1f;
-    [SerializeField] private float _attackDuration;
-    [SerializeField] private float _goBackDelay = 1f;
-    [SerializeField] private float _xOffset = 2f; 
-    
-    public override IEnumerator Execute(GameObject attacker, GameObject target, TweenCallback callback = null)
-    {
-        UnitAnimationHandler handler = attacker.GetComponent<UnitAnimationHandler>();
-        Vector3 initialPosition = attacker.transform.position;
-        Side side = attacker.gameObject.GetComponent<GameUnit>().Side;
-        Vector3 offset = (side == Side.LeftSide) ? new Vector3(-_xOffset, 0, 0) : new Vector3(+_xOffset, 0, 0);
+    [SerializeField] private float _dashTime = 1;
+    [SerializeField] private float _goBackDelay = 0.5f;
+    [SerializeField] private float _attackDelay = 1f;
+    [SerializeField] private float _damageTriggerOffset;
+    [SerializeField] private int _attackCount;
+    [SerializeField] private float[] _xOffset;
+    private Dictionary<int, float> _xOffsetDictionary = new Dictionary<int, float>();
 
-        handler.SetRunAnimation();
-        yield return attacker.transform.DOMove(target.transform.position + offset, _dashTime).SetEase(Ease.Linear).WaitForCompletion();
-        handler.SetMeleeAttackAnimation();
-        yield return new WaitForSeconds(_attackDuration);
-        callback?.Invoke(); 
+    void OnEnable()
+    {
+        _xOffsetDictionary.Clear();
+        for(int i = 0; i < _attackCount; i++)
+        {
+            _xOffsetDictionary.Add(i, _xOffset[i]);
+        }
+    }
+    public override IEnumerator Execute(GameUnit attacker, GameUnit target, TweenCallback callback = null)
+    {
+        yield return new WaitForSeconds(_attackDelay);
+        int attackIndex = Random.Range(0, _attackCount);
+        float xAttackPos = _xOffsetDictionary[attackIndex];
+        xAttackPos = attacker.UnitSide == Side.LeftSide ? xAttackPos : -xAttackPos;
+        attacker.AnimationHandler.SetRunState();
+        yield return attacker.transform.DOMoveX(attacker.transform.position.x + xAttackPos, _dashTime).SetEase(Ease.Linear).WaitForCompletion();
+        yield return attacker.AnimationHandler.SetMeleeAttackState(_damageTriggerOffset, attackIndex);
+        callback?.Invoke();
         yield return new WaitForSeconds(_goBackDelay);
-        handler.SetRunAnimation();
-        yield return attacker.transform.DOMove(initialPosition,_dashTime).SetEase(Ease.Linear).WaitForCompletion();
-        handler.SetIdleAnimation();
+        yield return Rotate(attacker.transform);
+        attacker.AnimationHandler.SetRunState();
+        yield return attacker.transform.DOMoveX(attacker.transform.position.x - xAttackPos, _dashTime).SetEase(Ease.Linear).WaitForCompletion();
+        yield return Rotate(attacker.transform);
+        attacker.AnimationHandler.SetIdleState();
+
+
+    }
+
+    private IEnumerator Rotate(Transform attacker)
+    {
+        yield return new WaitForEndOfFrame();
+        attacker.localScale = new Vector3(-attacker.transform.localScale.x, attacker.transform.localScale.y, attacker.transform.localScale.z);
     }
 }

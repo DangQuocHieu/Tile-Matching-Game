@@ -1,36 +1,27 @@
 using System;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 public class EnemyController : Singleton<EnemyController>, IMessageHandle
 {
-    private GameUnit _gameUnit;
-    void Start()
-    {
-        _gameUnit = GetComponent<GameUnit>();
-    }
+    [SerializeField] private float minDelay = 2f;
+    [SerializeField] private float maxDelay = 5f;
 
-    void OnEnable()
+    [SerializeField] private Side _side = Side.RightSide;
+    private void OnEnable()
     {
         MessageManager.AddSubcriber(GameMessageType.OnTurnStart, this);
     }
 
-    void OnDisable()
+    private void OnDisable()
     {
         MessageManager.RemoveSubcriber(GameMessageType.OnTurnStart, this);
     }
-
     private void PerformAction()
     {
         List<Tuple<GameObject, GameObject>> validMoves = BoardManager.Instance.GenerateValidMoves();
         Tuple<GameObject, GameObject> randomMoves = validMoves[UnityEngine.Random.Range(0, validMoves.Count)];
         DiamondController.Instance.SwapDiamond(randomMoves.Item1, randomMoves.Item2);
-    }
-
-    private void PerformActionWithDelay(float delayDuration)
-    {
-        Invoke("PerformAction", delayDuration);
     }
 
     public void Handle(Message message)
@@ -39,13 +30,11 @@ public class EnemyController : Singleton<EnemyController>, IMessageHandle
         {
             case GameMessageType.OnTurnStart:
                 Side currentSide = (Side)message.data[0];
-                if (_gameUnit.Side == currentSide)
+                if (_side == currentSide)
                 {
-                    PerformActionWithDelay(5f);
+                    Invoke("PerformAction", UnityEngine.Random.Range(minDelay, maxDelay + 1));
                 }
                 break;
         }
     }
-
-
 }

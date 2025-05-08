@@ -4,6 +4,6 @@ using UnityEngine;
 
 public interface IAttackStrategy
 {
-    public IEnumerator Execute(GameObject attacker, GameObject target, TweenCallback callback = null);
+    public IEnumerator Execute(GameUnit attacker, GameUnit target, TweenCallback callback = null);
 }
 

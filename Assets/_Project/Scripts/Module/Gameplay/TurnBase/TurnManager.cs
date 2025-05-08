@@ -1,13 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
-using TMPro;
-using Unity.VisualScripting;
+using System.Collections;   
 using UnityEngine;
 public enum Side
 {
-    LeftSide, RightSide
-    //LeftSide for player and RightSide for enemy
+    LeftSide, RightSide, None
 }
 public class TurnManager : Singleton<TurnManager>, IMessageHandle
 {
@@ -19,11 +14,10 @@ public class TurnManager : Singleton<TurnManager>, IMessageHandle
     private Coroutine _currentTurnCoroutine;
     private bool inProgress = true;
 
-    protected override void Awake()
+    private void Start()
     {
         base.Awake();
         StartCoroutine(LeftTurnCoroutine());
-
     }
 
     private void OnEnable()
@@ -71,6 +65,7 @@ public class TurnManager : Singleton<TurnManager>, IMessageHandle
 
     private IEnumerator TurnStartDelay()
     {
+        Debug.Log("SEND MESSAGE");
         MessageManager.SendMessage(new Message(GameMessageType.OnTurnStartDelay, new object[] { _turnDuration, _turnStartDelay, _currentSide }));
         yield return new WaitForSeconds(_turnStartDelay);
     }
@@ -113,10 +108,5 @@ public class TurnManager : Singleton<TurnManager>, IMessageHandle
                 Invoke("StartNextTurn", 2f);
                 break;
         }
-    }
-
-    public void GetEnemyUnit(Side side)
-    {
-
     }
 }

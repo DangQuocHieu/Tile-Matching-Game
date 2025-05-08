@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Wind Hashashin
+  m_Controller: {fileID: 9100000, guid: ab6ab7112999f4d49b40cf130d694cc2, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 48e2db459175bef41ade4a637d790b74, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 48c4590ecc88f084aad96976effea04c, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 1030fa891e48c9f4eb68a96151bcc45e, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: d20a5d7cddaddf64f978739e923fa543, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: f277389cbc290794991577b91193592b, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 8f015d1545e4bca40865d92fa3ddcce1, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: ce705abf8111b884587631f067c95fed, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 70c1fa17d5cb25b44a6e77732a2c61c2, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: eed3b1fc29b1e404b97f58f3b0ecbe1a, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 583893b9ca32f2e44a74a99d5656e112, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: fa049b8911b29dc48a29e5a6467fe129, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: cd09f7d3939dc1b4dae49490a1ee79aa, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 40b670c7f9bc0a14fb102491e52b1108, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: d498addb08807f9408922c91d6ad403f, type: 2}

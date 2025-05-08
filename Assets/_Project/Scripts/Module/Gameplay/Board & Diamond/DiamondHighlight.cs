@@ -10,32 +10,31 @@ public class DiamondHighlight : Singleton<DiamondHighlight>, IMessageHandle
     }
     void OnEnable()
     {
-        MessageManager.AddSubcriber(GameMessageType.OnDiamondSelected, this);
         MessageManager.AddSubcriber(GameMessageType.OnDiamondSwappedFail, this);
+        MessageManager.AddSubcriber(GameMessageType.OnDiamondSwapped, this);
     }
 
     void OnDisable()
     {
-        MessageManager.RemoveSubcriber(GameMessageType.OnDiamondSelected, this);
         MessageManager.RemoveSubcriber(GameMessageType.OnDiamondSwappedFail, this);      
+        MessageManager.RemoveSubcriber(GameMessageType.OnDiamondSwapped, this);
     }
 
     public void Handle(Message message)
     {
         switch(message.type)
         {
-            case GameMessageType.OnDiamondSelected:
-                Vector3 position = (Vector3)message.data[0];
-                Highlight(position);
-                break;
             case GameMessageType.OnDiamondSwappedFail:
+                UnHighlight();
+                break;
+            case GameMessageType.OnDiamondSwapped:
                 UnHighlight();
                 break;
 
         }
     }
 
-    private void Highlight(Vector3 position)
+    public void Highlight(Vector3 position)
     {
         _spriteRenderer.enabled = true;
         transform.position = position;

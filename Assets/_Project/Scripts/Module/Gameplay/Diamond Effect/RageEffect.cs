@@ -1,9 +1,10 @@
+using System.Collections;
 using UnityEngine;
 
 public class RageEffect : IEffect
 {
-    public void ApplyEffect(UnitStatHandler statHandler, int value)
+    public IEnumerator ApplyEffect(UnitStatHandler statHandler, int value)
     {
-        statHandler.AddRagePoint(value);
+        yield return statHandler.AddRagePoint(value);
     }
 }

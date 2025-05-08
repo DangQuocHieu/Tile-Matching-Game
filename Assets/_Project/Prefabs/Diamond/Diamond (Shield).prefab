@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5130071621541906865}
   - component: {fileID: 6150987232672507287}
   - component: {fileID: 8763961982044786786}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Diamond (Shield)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

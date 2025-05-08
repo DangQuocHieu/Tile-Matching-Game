@@ -4,13 +4,11 @@ public class DiamondController : Singleton<DiamondController>
 {
     public void SwapDiamond(GameObject previousDiamond, GameObject currentDiamond)
     {
-        SelectDiamond(currentDiamond.transform.position);
         if(previousDiamond == default) return;
         if (AreNeighbors(previousDiamond.transform.position, currentDiamond.transform.position))
         {
             MessageManager.SendMessage(new Message(GameMessageType.OnDiamondSwapped, new object[] { previousDiamond, currentDiamond }));
-        }
-        
+        }        
     }
 
     public void SelectDiamond(Vector3 diamondPosition)

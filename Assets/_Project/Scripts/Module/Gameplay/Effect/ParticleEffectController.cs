@@ -6,9 +6,7 @@ public class ParticleEffectController : Singleton<ParticleEffectController>, IMe
     [SerializeField] private ParticleSystem _healFX;
     [SerializeField] private ParticleSystem _manaFX;
     [SerializeField] private ParticleSystem _rageFX;
-    [SerializeField] private Vector3 _leftPosition = new Vector3(-4, 2, 0);
-    [SerializeField] private Vector3 _rightPosition = new Vector3(11, 2, 0);
-    private Dictionary<Side, Vector3> _effectPosition = new Dictionary<Side, Vector3>();
+    [SerializeField] private ParticleSystem _shieldFX;
     private Dictionary<DiamondType, ParticleSystem> _particleEffectDictionary = new Dictionary<DiamondType, ParticleSystem>();
 
     void Start()
@@ -18,29 +16,28 @@ public class ParticleEffectController : Singleton<ParticleEffectController>, IMe
 
     void OnEnable()
     {
-        MessageManager.AddSubcriber(GameMessageType.OnApplyEffect, this);
+        MessageManager.AddSubcriber(GameMessageType.OnApplyEffectStart, this);
     }
 
     void OnDisable()
     {
-        MessageManager.RemoveSubcriber(GameMessageType.OnApplyEffect, this);
+        MessageManager.RemoveSubcriber(GameMessageType.OnApplyEffectStart, this);
     }
 
     private void InitializeDictionary()
     {
-        _effectPosition.Add(Side.LeftSide, _leftPosition);
-        _effectPosition.Add(Side.RightSide, _rightPosition);
 
         _particleEffectDictionary.Add(DiamondType.Health, _healFX);
         _particleEffectDictionary.Add(DiamondType.Mana, _manaFX);
         _particleEffectDictionary.Add(DiamondType.Rage, _rageFX);
+        _particleEffectDictionary.Add(DiamondType.Shield, _shieldFX);
     }
 
     public void Handle(Message message)
     {
         switch (message.type)
         {
-            case GameMessageType.OnApplyEffect:
+            case GameMessageType.OnApplyEffectStart:
                 DiamondType type = (DiamondType)message.data[0];
                 PlayFX(type);
                 break;
@@ -52,8 +49,7 @@ public class ParticleEffectController : Singleton<ParticleEffectController>, IMe
         if (_particleEffectDictionary.ContainsKey(type))
         {
             ParticleSystem fx = _particleEffectDictionary[type];
-            Side currentSide = TurnManager.Instance.CurrentSide;
-            fx.transform.position = _effectPosition[currentSide];
+            fx.transform.position = BattleManager.Instance.CurrentUnit.transform.position;
             fx.Play();
         }
     }

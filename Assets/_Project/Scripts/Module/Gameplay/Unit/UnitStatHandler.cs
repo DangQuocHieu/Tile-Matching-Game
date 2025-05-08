@@ -1,99 +1,141 @@
+using System.Collections;
+using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Experimental.GlobalIllumination;
 
-public class UnitStatHandler : MonoBehaviour, IMessageHandle
+public class UnitStatHandler : MonoBehaviour
 {
-
-    private Side _side;
-    [SerializeField] protected UnitStat _stat;
+    [Header("Stat SO")]
+    [SerializeField] private UnitStat _stat;
     public UnitStat Stat => _stat;
-    [SerializeField] protected int _currentHealthPoint;
+
+    [Header("Stat")]
+    [SerializeField] private int _currentHealthPoint;
     public int CurrentHealthPoint => _currentHealthPoint;
-    [SerializeField] protected int _currentManaPoint;
+    [SerializeField] private int _currentManaPoint;
     public int CurrentManaPoint => _currentManaPoint;
-    [SerializeField] protected int _currentRagePoint;
+    [SerializeField] private int _currentRagePoint;
     public int CurrentRagePoint => _currentRagePoint;
-    [SerializeField] protected int _currentShieldPoint;
-    [SerializeField] protected int _attackDamage;
-    public int AttackDamage => _attackDamage;
+    [SerializeField] private int _currentShieldPoint;
+    public int CurrentShieldPoint => _currentShieldPoint;
 
+    private Dictionary<DiamondType, IEffect> _effectDictionary = new Dictionary<DiamondType, IEffect>();
+    [SerializeField] private float _applyEffectDuration = 1f;
+    // [SerializeField] private GameObject _shieldIcon;
 
-    protected void Awake()
+    private UnitAnimationHandler _animationHandler;
+
+    void Start()
     {
-        SetUpStat();
-        _side = GetComponent<GameUnit>().Side;
+        _animationHandler = GetComponent<UnitAnimationHandler>();
+        InitializeStat();
+        InitializeEffectDictionary();
+        // InitShieldIconPosition();
     }
 
-    void OnEnable()
+    void Update()
     {
-        MessageManager.AddSubcriber(GameMessageType.OnAttack, this);
+        // DisplayShieldIcon();
     }
-
-    void OnDisable()
-    {
-        MessageManager.RemoveSubcriber(GameMessageType.OnAttack, this);
-    }
-
-    private void SetUpStat()
+    private void InitializeStat()
     {
         _currentHealthPoint = _stat.MaxHealthPoint;
         _currentManaPoint = 0;
         _currentRagePoint = 0;
-        _currentShieldPoint = 0;
-        _attackDamage = _stat.BaseDamage;
     }
 
-
-    public void AddManaPoint(int counter)
+    private void InitializeEffectDictionary()
     {
-        _currentManaPoint += counter * _stat.ManaIncrease;
-        _currentManaPoint = Mathf.Clamp(_currentManaPoint, 0, _stat.MaxManaPoint);
+        _effectDictionary.Add(DiamondType.Health, new HealthEffect());
+        _effectDictionary.Add(DiamondType.Mana, new ManaEffect());
+        _effectDictionary.Add(DiamondType.Rage, new RageEffect());
+        _effectDictionary.Add(DiamondType.Shield, new ShieldEffect());
     }
 
-    public void AddRagePoint(int counter)
+    // private void InitShieldIconPosition()
+    // {
+    //     _shieldIcon.transform.localPosition = Vector3.one;
+    // }
+    // private void DisplayShieldIcon()
+    // {
+    //     if(_currentShieldPoint != 0) _shieldIcon.gameObject.SetActive(true);
+    //     else _shieldIcon.gameObject.SetActive(false);
+    // }
+
+    public IEnumerator AddHealthPoint(int value)
     {
-        _currentRagePoint += counter * _stat.RageIncrease;
-        _currentRagePoint = Mathf.Clamp(_currentRagePoint, 0, _stat.MaxRagePoint);
+        yield return new WaitForSeconds(_applyEffectDuration);
+        int healthToAdd = value * _stat.BaseHealthPoint;
+        _currentHealthPoint += healthToAdd;
+        _currentHealthPoint = Mathf.Clamp(_currentHealthPoint,0, _stat.MaxHealthPoint);
+        MessageManager.SendMessage(new Message(GameMessageType.OnApplyEffectStart, new object[] {DiamondType.Health, healthToAdd}));
+        
     }
 
-    public void AddHealthPoint(int counter)
+    public IEnumerator AddManaPoint(int value)
     {
-        _currentHealthPoint += counter * _stat.HealthIncrease;
-        _currentHealthPoint = Mathf.Clamp(_currentHealthPoint, 0, _stat.MaxHealthPoint);
+        yield return new WaitForSeconds(_applyEffectDuration);
+        int manaToAdd = value * _stat.BaseManaPoint;
+        _currentManaPoint += manaToAdd;
+        _currentManaPoint = Mathf.Clamp(_currentManaPoint,0, _stat.MaxManaPoint);
+        MessageManager.SendMessage(new Message(GameMessageType.OnApplyEffectStart, new object[] {DiamondType.Mana, manaToAdd}));
     }
 
-    public void AddShieldPoint(int counter)
+    public IEnumerator AddRagePoint(int value)
     {
-        _currentShieldPoint += counter * _stat.ShieldIncrease;
-        _currentShieldPoint = Mathf.Clamp(_currentShieldPoint, 0, _stat.MaxShieldPoint);
+        yield return new WaitForSeconds(_applyEffectDuration);
+        int rageToAdd = value * _stat.BaseRagePoint;
+        _currentRagePoint += rageToAdd;
+        _currentRagePoint = Mathf.Clamp(_currentRagePoint, 0, _stat.MaxRagePoint);      
+        MessageManager.SendMessage(new Message(GameMessageType.OnApplyEffectStart, new object[] {DiamondType.Rage, rageToAdd}));  
     }
-    
-    public void TakeDamage(int damage)
+
+    public IEnumerator AddShieldPoint(int value)
     {
-        int damageToShield = Mathf.Min(damage, _currentShieldPoint);
-        AddShieldPoint(-damageToShield);
-        damage -= damageToShield;
-        _currentHealthPoint -= damage;
-        _currentHealthPoint = Mathf.Clamp(_currentHealthPoint, 0, _stat.MaxHealthPoint);
-        if(_currentHealthPoint <= 0)
+        yield return new WaitForSeconds(_applyEffectDuration);
+        int shieldToAdd = value * _stat.BaseShieldPoint;
+        _currentShieldPoint += shieldToAdd; 
+        MessageManager.SendMessage(new Message(GameMessageType.OnApplyEffectStart, new object[] {DiamondType.Shield, shieldToAdd}));
+    }
+
+    public IEnumerator ApplyEffect(DiamondType diamondType, int value)
+    {
+        if(_effectDictionary.ContainsKey(diamondType))
         {
-            //DIE
+            yield return _effectDictionary[diamondType].ApplyEffect(this, value);
         }
     }
 
-    public void Handle(Message message)
+    public int CalculateDamage(int value)
     {
-        switch(message.type)
+        int damage = value * _stat.BaseDamage;
+        if(_currentRagePoint == _stat.RagePointToIncreaseDamage)
         {
-            case GameMessageType.OnAttack:
-                int damage = (int)message.data[0];
-                Side side = (Side)message.data[1];
-                if(side != _side)
-                {
-                    TakeDamage(damage);
-                }
-                break;
+            _currentRagePoint -= _stat.RagePointToIncreaseDamage;
+            _currentRagePoint = Mathf.Clamp(_currentRagePoint, 0, _stat.MaxRagePoint);
+            damage = (int)(damage * _stat.DamageScale);
+        }
+        return damage;
+    }
 
-            
+    public void TakeDamage(int damage)
+    {
+        if(_currentShieldPoint != 0)
+        {
+            _currentShieldPoint = 0;
+            damage = 0;
+        }
+        _currentHealthPoint -= damage;
+        _currentHealthPoint = Mathf.Clamp(_currentHealthPoint,0, _stat.MaxHealthPoint);
+        if(damage != 0)
+        {
+            _animationHandler.SetHurtState();
+        }
+        MessageManager.SendMessage(new Message(GameMessageType.OnTakeDamage, new object[] {damage}));
+        if(damage == 0)
+        {
+            //DIE ?
         }
     }
 }

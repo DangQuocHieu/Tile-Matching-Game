@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 594e8eebbc45a2d40bcc1c21fd76319b, type: 3}
+  m_Name: Fire Knight
+  m_EditorClassIdentifier: 
+  _characterIcon: {fileID: -6815031003853325434, guid: ccf32ee999acdbd4ebd0fe45266aebbc, type: 3}
+  _characterImage: {fileID: -7934773192000193494, guid: f7acc4896d24b314fa1611a05bab5fda, type: 3}
+  _stat: {fileID: 11400000, guid: 0e93b3d85bc876c4ab25e7d5da83f181, type: 2}

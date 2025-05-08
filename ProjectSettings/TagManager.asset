@@ -12,7 +12,7 @@ TagManager:
   - Water
   - UI
   - Highlight
-  - 
+  - Diamond
   - 
   - 
   - 
@@ -47,8 +47,11 @@ TagManager:
   - name: Unit
     uniqueID: 2720614869
     locked: 0
-  - name: UnitAttacking
+  - name: Attack
     uniqueID: 3378538189
+    locked: 0
+  - name: ParticleSystem
+    uniqueID: 1169174299
     locked: 0
   m_RenderingLayers:
   - Default

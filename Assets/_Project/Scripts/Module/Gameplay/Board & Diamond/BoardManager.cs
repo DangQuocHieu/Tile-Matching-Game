@@ -1,10 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using DG.Tweening;
-using TMPro;
-using UnityEditor;
 using UnityEngine;
 
 public class BoardManager : Singleton<BoardManager>, IMessageHandle

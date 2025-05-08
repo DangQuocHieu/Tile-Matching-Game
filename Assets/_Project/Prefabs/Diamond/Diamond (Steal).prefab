@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3536198017156931376}
   - component: {fileID: 3254298854292103386}
   - component: {fileID: -1236008220578699081}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Diamond (Steal)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

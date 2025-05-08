@@ -1,9 +1,10 @@
+using System.Collections;
 using UnityEngine;
 
 public class HealthEffect : IEffect
 {
-    public void ApplyEffect(UnitStatHandler statHandler, int value)
+    public IEnumerator ApplyEffect(UnitStatHandler statHandler, int value)
     {
-        statHandler.AddHealthPoint(value);
+        yield return statHandler.AddHealthPoint(value);
     }
 }

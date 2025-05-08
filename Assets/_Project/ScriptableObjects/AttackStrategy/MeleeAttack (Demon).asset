@@ -12,7 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7478205403ceba4448dda0038cca1e3e, type: 3}
   m_Name: MeleeAttack (Demon)
   m_EditorClassIdentifier: 
-  _dashTime: 1.5
-  _attackDuration: 0.3
-  _goBackDelay: 1
-  _xOffset: 3
+  _dashTime: 1
+  _goBackDelay: 0.5
+  _attackDelay: 1
+  _damageTriggerOffset: 0.05
+  _attackCount: 1
+  _xOffset:
+  - 12

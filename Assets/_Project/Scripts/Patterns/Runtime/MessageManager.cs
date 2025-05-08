@@ -10,12 +10,12 @@ public enum GameMessageType
     OnDiamondSwapped,
     OnDiamondDestroy,
     OnDiamondSwappedFail,
-    OnBoardProcessed, //Send this message when all diamond matched in current turn
-    OnMatchStatUIUpdated,
-    OnApplyEffect,
-    OnAttack,
+    OnBoardProcessed,
+    OnCombatPhaseStart,
+    OnApplyEffectStart,
+    OnTakeDamage,
     OnCurrentTurnPaused,
-    OnCurrentTurnEnd,
+    OnCurrentTurnEnd    
 }
 
 public class Message

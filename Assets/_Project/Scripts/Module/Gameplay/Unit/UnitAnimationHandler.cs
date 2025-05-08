@@ -1,73 +1,46 @@
+using System.Collections;
 using UnityEngine;
 
-public class UnitAnimationHandler : MonoBehaviour, IMessageHandle
+public class UnitAnimationHandler : MonoBehaviour
 {
-
-    private Side _side;
-    [SerializeField] private Animator _unitAnim;
+    private Animator _unitAnimator;
     [Header("String for animation trigger")]
-    [SerializeField] private string _idleString = "Idle";
-    [SerializeField] private string _runString = "Run";
-    [SerializeField] private string _meleeAttackString = "MeleeAttack";
-    [SerializeField] private string _rangedAttackString = "RangedAttack";
-    [SerializeField] private string _hurtAttackString = "Hurt";
-
-
-    void Start()
+    private string _idleString = "Idle";
+    private string _runString = "Run";
+    private string _meleeAttackString = "meleeAttackIndex";
+    private string _hurtString = "Hurt";
+    private string _dieString = "Die";    
+    void Awake()
     {
-        _side = GetComponent<GameUnit>().Side;
+        _unitAnimator = GetComponent<Animator>();
     }
 
-    void OnEnable()
+    public void SetIdleState()
     {
-        MessageManager.AddSubcriber(GameMessageType.OnAttack, this);
+        _unitAnimator.SetTrigger(_idleString);
     }
 
-    void OnDisable()
+    public void SetRunState()
     {
-        MessageManager.AddSubcriber(GameMessageType.OnAttack, this);
+        _unitAnimator.SetTrigger(_runString);
     }
 
-    public void SetIdleAnimation()
+    public void SetHurtState()
     {
-        if(_unitAnim == null) return;
-        _unitAnim.SetTrigger(_idleString);
+        _unitAnimator.SetTrigger(_hurtString);
     }
 
-    public void SetRunAnimation()
+    public IEnumerator SetMeleeAttackState(float damageTriggerOffset, int index)
     {
-        if(_unitAnim == null) return;
-        _unitAnim.SetTrigger(_runString);
+        yield return new WaitForEndOfFrame();
+        _unitAnimator.SetInteger(_meleeAttackString, index);
+        AnimatorStateInfo stateInfo = _unitAnimator.GetCurrentAnimatorStateInfo(0);
+        yield return new WaitForSeconds(stateInfo.length - damageTriggerOffset);
+        _unitAnimator.SetInteger(_meleeAttackString, -1);
     }
 
-    public void SetMeleeAttackAnimation()
+    public void SetDieState()
     {
-        if(_unitAnim == null) return;
-        _unitAnim.SetTrigger(_meleeAttackString);
-    }
-
-    public void SetRangedAttackAnimation()
-    {
-        if(_unitAnim == null) return;
-        _unitAnim.SetTrigger(_rangedAttackString);
-    }
-
-    public void SetHurAnimation()
-    {
-        if(_unitAnim == null) return;
-        _unitAnim.SetTrigger(_hurtAttackString);
-    }
-
-    public void Handle(Message message)
-    {
-        switch(message.type)
-        {
-            case GameMessageType.OnAttack:
-                if(_side != TurnManager.Instance.CurrentSide)
-                {
-                    SetHurAnimation();
-                }
-                break;
-        }
+        _unitAnimator.SetTrigger(_dieString);
     }
 }

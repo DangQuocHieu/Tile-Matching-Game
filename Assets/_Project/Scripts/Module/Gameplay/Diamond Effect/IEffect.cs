@@ -1,6 +1,7 @@
+using System.Collections;
 using UnityEngine;
 
 public interface IEffect
 {
-    public void ApplyEffect(UnitStatHandler statHandler, int value);
+    public IEnumerator ApplyEffect(UnitStatHandler statHandler, int value);
 }

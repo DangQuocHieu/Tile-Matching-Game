@@ -3,26 +3,32 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "UnitStat", menuName = "Scriptable Objects/UnitStat")]
 public class UnitStat : ScriptableObject
 {
+    [SerializeField] private string _unitId;
+    public string UnitId => _unitId;
+    [Header("Max Stats")]
     [SerializeField] private int _maxHealthPoint;
     public int MaxHealthPoint => _maxHealthPoint;
     [SerializeField] private int _maxManaPoint;
     public int MaxManaPoint => _maxManaPoint;
     [SerializeField] private int _maxRagePoint;
     public int MaxRagePoint => _maxRagePoint;
-    [SerializeField] private int _maxShieldPoint;
-    public int MaxShieldPoint => _maxShieldPoint;
     
-    //Base value when match 1 diamonds.
+    //Base properties per diamond matched
+    [Header("Gain Per Diamond")]
+    [SerializeField] private int _baseHealthPoint;
+    public int BaseHealthPoint => _baseHealthPoint;
+    [SerializeField] private int _baseManaPoint;
+    public int BaseManaPoint => _baseManaPoint;
+    [SerializeField] private int _baseRagePoint;
+    public int BaseRagePoint => _baseRagePoint;
     [SerializeField] private int _baseDamage;
     public int BaseDamage => _baseDamage;
-    [SerializeField] private int _manaIncrease;
-    public int ManaIncrease => _manaIncrease;
-    [SerializeField] private int _rageIncrease;
-    public int RageIncrease => _rageIncrease;
-    [SerializeField] private int _shieldIncrease;
-    public int ShieldIncrease => _shieldIncrease;
+    [SerializeField] private int _baseShieldPoint;
+    public int BaseShieldPoint => _baseShieldPoint;
 
-    [SerializeField] private int _healthIncrease;
-    public int HealthIncrease => _healthIncrease;
-
+    [Header("Another")]
+    [SerializeField] private int _ragePointToIncreaseDamage;
+    public int RagePointToIncreaseDamage => _ragePointToIncreaseDamage;
+    [SerializeField] private float _damageScale = 1.5f;
+    public float DamageScale => _damageScale;
 }
