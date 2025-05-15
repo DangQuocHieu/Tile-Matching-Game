@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 public enum DiamondType
 {
-    None = 0, Mana = 1, Rage = 2, Health = 3, Shield = 4, Steal = 5, Attack = 6
+    None = 0, MagicPoint = 1, Rage = 2, Health = 3, Shield = 4, Steal = 5, Attack = 6
 }
 public class Diamond : MonoBehaviour
 {

@@ -17,14 +17,16 @@ public class UnitStat : ScriptableObject
     [Header("Gain Per Diamond")]
     [SerializeField] private int _baseHealthPoint;
     public int BaseHealthPoint => _baseHealthPoint;
-    [SerializeField] private int _baseManaPoint;
-    public int BaseManaPoint => _baseManaPoint;
+    [SerializeField] private int _baseMagicPoint;
+    public int BaseMagicPoint => _baseMagicPoint;
     [SerializeField] private int _baseRagePoint;
     public int BaseRagePoint => _baseRagePoint;
     [SerializeField] private int _baseDamage;
     public int BaseDamage => _baseDamage;
     [SerializeField] private int _baseShieldPoint;
     public int BaseShieldPoint => _baseShieldPoint;
+    [SerializeField] private int _baseStealPoint;
+    public int BaseStealPoint => _baseStealPoint;
 
     [Header("Another")]
     [SerializeField] private int _ragePointToIncreaseDamage;

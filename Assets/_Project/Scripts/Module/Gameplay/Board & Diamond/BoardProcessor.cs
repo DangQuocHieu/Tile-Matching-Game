@@ -64,7 +64,6 @@ public class BoardProcessor : MonoBehaviour
                 if (board[y, x] != null)
                 {
                     Destroy(board[y, x].gameObject);
-                    MessageManager.SendMessage(new Message(GameMessageType.OnDiamondDestroy, new object[] {board[y,x].DiamondType}));
                     board[y, x] = null;
                 }
             }
@@ -120,16 +119,18 @@ public class BoardProcessor : MonoBehaviour
         yield return new WaitForEndOfFrame();
     }
 
-    public IEnumerator ClearAllMatchDiamond(HashSet<Diamond> allMatches)
+    public IEnumerator ClearDiamond(HashSet<Vector2Int> allMatches, Diamond[,] board)
     {
         Sequence sequence = DOTween.Sequence();
         foreach (var diamond in allMatches)
         {
-            sequence.Join(_scaleAnim.ScaleOut(diamond.gameObject, () =>
+            Diamond current = board[diamond.y, diamond.x];
+            sequence.Join(_scaleAnim.ScaleOut(current.gameObject, () =>
             {
                 //Send Message: Diamond Destroy
-                Destroy(diamond.gameObject);
-                MessageManager.SendMessage(new Message(GameMessageType.OnDiamondDestroy, new object[] {diamond.DiamondType}));
+                MessageManager.SendMessage(new Message(GameMessageType.OnDiamondDestroy, new object[] { current.DiamondType }));
+                Destroy(current.gameObject);
+
             }));
         }
         yield return sequence.Play().WaitForCompletion();
@@ -140,4 +141,39 @@ public class BoardProcessor : MonoBehaviour
     {
         yield return _swapAnim.Swap(prev, curr, callback);
     }
+
+
+    #region Method for find best move
+    public void ClearDiamondData(HashSet<Vector2Int> allMatches, DiamondType[,] boardData)
+    {
+        foreach (var item in allMatches)
+        {
+            boardData[item.y, item.x] = DiamondType.None;
+        }
+    }
+
+    public void CollapseBoardData(DiamondType[,] boardData)
+    {
+        for (int x = 0; x < boardData.GetLength(1); x++)
+        {
+            for (int y = 0; y < boardData.GetLength(0); y++)
+            {
+                if (boardData[y, x] == DiamondType.None)
+                {
+                    for (int index = y + 1; index < boardData.GetLength(0); index++)
+                    {
+                        if (boardData[index, x] != DiamondType.None)
+                        {
+                            boardData[y, x] = boardData[index, x];
+                            boardData[index, x] = DiamondType.None;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    #endregion
+
+
 }

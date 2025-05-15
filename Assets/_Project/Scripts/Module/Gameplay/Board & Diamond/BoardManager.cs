@@ -1,11 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
-
 public class BoardManager : Singleton<BoardManager>, IMessageHandle
 {
-
     [SerializeField] private int _boardWidth;
     [SerializeField] private int _boardHeight;
     [SerializeField] private Transform _diamondContainer;
@@ -13,11 +12,23 @@ public class BoardManager : Singleton<BoardManager>, IMessageHandle
     public int BoardHeight => _boardHeight;
     private Diamond[,] _board;
     public Diamond[,] Board => _board;
+
+    private DiamondType[,] _boardData;
+    public DiamondType[,] BoardData {
+        get {
+            UpdateBoardData();
+            return _boardData;
+        }
+    }
     private MatchFinder _matchFinder;
+    public MatchFinder MatchFinder => _matchFinder;
     private BoardProcessor _boardProcessor;
-    private HashSet<Diamond> _allMatches = new HashSet<Diamond>();
+    public BoardProcessor BoardProcessor => _boardProcessor;
+    private HashSet<Vector2Int> _allMatches = new HashSet<Vector2Int>();
+
     void Start()
     {
+        _boardData = new DiamondType[_boardWidth,_boardHeight]; 
         _matchFinder = GetComponent<MatchFinder>();
         _boardProcessor = GetComponent<BoardProcessor>();
         GenerateBoard();
@@ -25,14 +36,20 @@ public class BoardManager : Singleton<BoardManager>, IMessageHandle
 
     void OnEnable()
     {
-        MessageManager.AddSubcriber(GameMessageType.OnDiamondSwapped, this);
-        MessageManager.AddSubcriber(GameMessageType.OnTurnStartDelay, this);
+        MessageManager.AddSubscriber(GameMessageType.OnDiamondSwapped, this);
+        MessageManager.AddSubscriber(GameMessageType.OnTurnStartDelay, this);
+        MessageManager.AddSubscriber(GameMessageType.OnApplyEffectStart, this);
+        MessageManager.AddSubscriber(GameMessageType.OnApplyCardEffectEnd, this);
+        MessageManager.AddSubscriber(GameMessageType.OnApplyGainCard, this);
     }
 
     void OnDisable()
     {
-        MessageManager.RemoveSubcriber(GameMessageType.OnDiamondSwapped, this);
-        MessageManager.RemoveSubcriber(GameMessageType.OnTurnStartDelay, this);
+        MessageManager.RemoveSubscriber(GameMessageType.OnDiamondSwapped, this);
+        MessageManager.RemoveSubscriber(GameMessageType.OnTurnStartDelay, this);
+        MessageManager.RemoveSubscriber(GameMessageType.OnApplyEffectStart, this);
+        MessageManager.RemoveSubscriber(GameMessageType.OnApplyCardEffectEnd, this);
+        MessageManager.RemoveSubscriber(GameMessageType.OnApplyGainCard, this);
     }
     void Update()
     {
@@ -60,51 +77,74 @@ public class BoardManager : Singleton<BoardManager>, IMessageHandle
             case GameMessageType.OnTurnStartDelay:
                 ShowDiamondBoard();
                 break;
+            case GameMessageType.OnApplyCardEffectEnd:
+                ShowDiamondBoard();
+                break;
+            case GameMessageType.OnApplyGainCard:
+                HideDiamondBoard();
+                break;
+
         }
     }
+
 
     private IEnumerator ProcessSwapping(GameObject previousDiamond, GameObject currentDiamond)
     {
         yield return _boardProcessor.Swap(previousDiamond, currentDiamond, () =>
         {
-            SwapDiamondValue(previousDiamond.transform.position, currentDiamond.transform.position);
+            SwapDiamondValue(previousDiamond.transform.position, currentDiamond.transform.position, _board);
         });
-        _allMatches = _matchFinder.FindMatches(_boardWidth, _boardHeight, _board);
+        UpdateBoardData();
+        _allMatches = _matchFinder.FindMatches(_boardData);
         if (_allMatches != null && _allMatches.Count > 0)
         {
             //Pause current turn
-            MessageManager.SendMessage(new Message(GameMessageType.OnCurrentTurnPaused));
-            while (_allMatches != null && _allMatches.Count > 0)
-            {
-                yield return _boardProcessor.ClearAllMatchDiamond(_allMatches);
-                yield return _boardProcessor.CollapseBoard(_board);
-                yield return _boardProcessor.RefillBoard(_board, _diamondContainer);
-                _allMatches = _matchFinder.FindMatches(_boardWidth, _boardHeight, _board);
-            }
-            yield return new WaitForSeconds(2f);
-            MessageManager.SendMessage(new Message(GameMessageType.OnBoardProcessed));
-            HideDiamondBoard();
+            TurnManager.Instance.PauseCurrentTurn();
+            //
+            yield return ProcessBoard();
         }
         else
         {
             yield return _boardProcessor.Swap(previousDiamond, currentDiamond, () =>
             {
-                SwapDiamondValue(previousDiamond.transform.position, currentDiamond.transform.position);
+                SwapDiamondValue(previousDiamond.transform.position, currentDiamond.transform.position, _board);
                 MessageManager.SendMessage(new Message(GameMessageType.OnDiamondSwappedFail));
             });
 
         }
     }
-
-    private void SwapDiamondValue(Vector3 prev, Vector3 curr)
+    public IEnumerator ProcessBoard()
     {
-        Diamond temp = _board[(int)prev.y, (int)prev.x];
-        _board[(int)prev.y, (int)prev.x] = _board[(int)curr.y, (int)curr.x];
-        _board[(int)curr.y, (int)curr.x] = temp;
+        MessageManager.SendMessage(new Message(GameMessageType.OnProcessBoardStart));
+        while (_allMatches != null && _allMatches.Count > 0)
+        {
+            yield return _boardProcessor.ClearDiamond(_allMatches, _board);
+            yield return _boardProcessor.CollapseBoard(_board);
+            yield return _boardProcessor.RefillBoard(_board, _diamondContainer);
+            UpdateBoardData();
+            _allMatches = _matchFinder.FindMatches(_boardData);
+
+        }
+        yield return SendBoardProcessedMessage();
+        HideDiamondBoard();
+    }
+
+    private IEnumerator SendBoardProcessedMessage()
+    {
+        yield return new WaitForSeconds(2f);
+        MessageManager.SendMessage(new Message(GameMessageType.OnBoardProcessed));
+    }
+
+    public void SwapDiamondValue(Vector3 prev, Vector3 curr, Diamond[,] board)
+    {
+        Diamond temp = board[(int)prev.y, (int)prev.x];
+        board[(int)prev.y, (int)prev.x] = board[(int)curr.y, (int)curr.x];
+        board[(int)curr.y, (int)curr.x] = temp;
     }
 
     public List<Tuple<GameObject, GameObject>> GenerateValidMoves()
     {
+        UpdateBoardData();
         List<Tuple<GameObject, GameObject>> validMoves = new List<Tuple<GameObject, GameObject>>();
         Vector3[] directions = new Vector3[2]
         {
@@ -126,15 +166,15 @@ public class BoardManager : Singleton<BoardManager>, IMessageHandle
                     //SWAP
                     if (IsValidPosition(neighborDiamond))
                     {
-                        SwapDiamondValue(currentDiamond, neighborDiamond);
-                        if (_matchFinder.FindMatches(_boardWidth, _boardHeight, _board).Count > 0)
+                        SwapDiamondType(currentDiamond, neighborDiamond, _boardData);
+                        if (_matchFinder.FindMatches(_boardData).Count > 0)
                         {
                             GameObject currentDiamondGO = _board[(int)currentDiamond.y, (int)currentDiamond.x].gameObject;
                             GameObject neighborDiamondGO = _board[(int)neighborDiamond.y, (int)neighborDiamond.x].gameObject;
                             validMoves.Add(Tuple.Create(currentDiamondGO, neighborDiamondGO));
                         }
                         //UNDO
-                        SwapDiamondValue(currentDiamond, neighborDiamond);
+                        SwapDiamondType(currentDiamond, neighborDiamond, _boardData);
                     }
                 }
             }
@@ -152,4 +192,82 @@ public class BoardManager : Singleton<BoardManager>, IMessageHandle
         _diamondContainer.gameObject.SetActive(false);
     }
 
+    //Reuse for clear entire row and clear entire col method
+    public void ClearEntireRow(GameObject diamond)
+    {
+        int row = (int)diamond.transform.position.y;
+        HashSet<Vector2Int> diamondsInRow = new HashSet<Vector2Int>();
+        for (int x = 0; x < _board.GetLength(1); x++)
+        {
+            diamondsInRow.Add(new Vector2Int(row, x));
+        }
+        StartCoroutine(ClearHandler(diamondsInRow));
+    }
+
+    public void ClearEntireCol(GameObject diamond)
+    {
+        int col = (int)diamond.transform.position.x;
+        HashSet<Vector2Int> diamondsInCol = new HashSet<Vector2Int>();
+        for (int y = 0; y < _board.GetLength(0); y++)
+        {
+            diamondsInCol.Add(new Vector2Int(y, col));
+        }
+        StartCoroutine(ClearHandler(diamondsInCol));
+    }
+
+    public void CrossClear(GameObject diamond)
+    {
+        int row = (int)diamond.transform.position.y;
+        int col = (int)diamond.transform.position.x;
+        HashSet<Vector2Int> diamondsInCross = new HashSet<Vector2Int>();
+        for (int x = 0; x < _board.GetLength(1); x++)
+        {
+            diamondsInCross.Add(new Vector2Int(row, x));
+        }
+        for (int y = 0; y < _board.GetLength(0); y++)
+        {
+            diamondsInCross.Add(new Vector2Int(y, col));
+        }
+        StartCoroutine(ClearHandler(diamondsInCross));
+    }
+
+    private IEnumerator ClearHandler(HashSet<Vector2Int> diamondsToClear)
+    {
+        TurnManager.Instance.PauseCurrentTurn();
+        MessageManager.SendMessage(new Message(GameMessageType.OnProcessBoardStart));
+        yield return _boardProcessor.ClearDiamond(diamondsToClear, _board);
+        yield return _boardProcessor.CollapseBoard(_board);
+        yield return _boardProcessor.RefillBoard(_board, _diamondContainer);
+        UpdateBoardData();
+        _allMatches = _matchFinder.FindMatches(_boardData);
+        if (_allMatches != null && _allMatches.Count > 0)
+        {
+            yield return ProcessBoard();
+        }
+
+        else
+        {
+            yield return SendBoardProcessedMessage();
+            HideDiamondBoard();
+        }
+    }
+
+    private void UpdateBoardData()
+    {
+        for(int y = 0; y < _board.GetLength(0); y++)
+        {
+            for(int x = 0; x < _board.GetLength(1); x++)
+            {
+                _boardData[y,x] = _board[y, x].DiamondType;
+            }
+        }
+    }
+    #region Method for find best move
+    public void SwapDiamondType(Vector3 prev, Vector3 curr, DiamondType[,] boardData)
+    {
+        DiamondType temp = boardData[(int)prev.y, (int)prev.x];
+        boardData[(int)prev.y, (int)prev.x] = boardData[(int)curr.y, (int)curr.x];
+        boardData[(int)curr.y, (int)curr.x] = temp;
+    }
+    #endregion
 }

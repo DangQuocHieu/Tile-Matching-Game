@@ -1,9 +1,17 @@
 using System.Collections;
+using UnityEngine;
 
-public class ShieldEffect : IEffect
+[CreateAssetMenu(fileName = "ShieldEffect", menuName = "Scriptable Objects/DiamondEffect/ShieldEffect")]
+public class ShieldEffect : GameEffectSO
 {
-    public IEnumerator ApplyEffect(UnitStatHandler statHandler, int value)
+    public override IEnumerator Execute(int value)
     {
-        yield return statHandler.AddShieldPoint(value);
+        yield return new WaitForSeconds(_applyDuration);
+        BattleManager.Instance.CurrentUnit.StatHandler.AddShieldPoint(value);
+    }
+    public override IEnumerator Execute(UnitStatHandler handler, int value)
+    {
+        yield return new WaitForSeconds(_applyDuration);
+        handler.AddShieldPoint(value);
     }
 }

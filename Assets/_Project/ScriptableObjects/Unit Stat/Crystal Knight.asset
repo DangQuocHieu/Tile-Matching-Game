@@ -13,13 +13,14 @@ MonoBehaviour:
   m_Name: Crystal Knight
   m_EditorClassIdentifier: 
   _unitId: Crystal Knight
-  _maxHealthPoint: 500
+  _maxHealthPoint: 2500
   _maxManaPoint: 200
   _maxRagePoint: 200
-  _baseHealthPoint: 20
-  _baseManaPoint: 20
-  _baseRagePoint: 20
-  _baseDamage: 100
-  _baseShieldPoint: 20
+  _baseHealthPoint: 27
+  _baseMagicPoint: 26
+  _baseRagePoint: 24
+  _baseDamage: 105
+  _baseShieldPoint: 24
+  _baseStealPoint: 23
   _ragePointToIncreaseDamage: 100
-  _damageScale: 1.5
+  _damageScale: 1.25

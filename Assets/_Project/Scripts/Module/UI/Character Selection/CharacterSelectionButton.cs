@@ -14,6 +14,5 @@ public class CharacterSelectionButton : MonoBehaviour
         _config = config;
         _characterImage.sprite = config.CharacterIcon;
         _id = config.Stat.UnitId;
-
     }
 }

@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3355548659764960480
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6124505215715331368}
+  - component: {fileID: 5432785877358413672}
+  m_Layer: 0
+  m_Name: Card Selection Controller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6124505215715331368
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3355548659764960480}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5432785877358413672
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3355548659764960480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d088bb36a91ab34ca604e987cb86436, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _gameCardPrefab:
+  - {fileID: 1920525172121661958, guid: dc0d3e7870e776b4882b4b38d3421689, type: 3}
+  - {fileID: 5214028234299294779, guid: b7e79bba64c504e49b39353465aaa7af, type: 3}
+  - {fileID: 7611082914111157323, guid: 3701d400e4c1931469306e1418914bfd, type: 3}
+  - {fileID: 5374646506610225766, guid: 2f9ff5f0127a43f4e9f426b2d1bcb093, type: 3}
+  - {fileID: 7611082914111157323, guid: d4936fd6d5d4588488ad87a40e1f949c, type: 3}
+  - {fileID: 8918097679174393688, guid: bcf6c42f7f8f4ca4b92e16849f53745f, type: 3}
+  _availableCards:
+  - {fileID: 11400000, guid: 184a7142e9caf084e9ae03ee77b6941b, type: 2}
+  - {fileID: 11400000, guid: 8e3a74b687c12f94db032024d385b52e, type: 2}
+  - {fileID: 11400000, guid: 73eeee4376b281e4183ff58b6a600167, type: 2}
+  - {fileID: 11400000, guid: 5dcb80c29c8a03f4b8920ebb7983795d, type: 2}
+  - {fileID: 11400000, guid: e634231420c401e45abe0d952a1a1d77, type: 2}
+  - {fileID: 11400000, guid: a100ec9f5957b4a488a49b42d4070c7d, type: 2}
+  _selectedCards: []
+  _cardSelectorPrefab: {fileID: 653975990867822297, guid: 89ccc022ee10a504aa6f3e79890813da, type: 3}
+  _avaiableCardContainter: {fileID: 0}
+  _selectedCardContainer: {fileID: 0}
+  _capacity: 4

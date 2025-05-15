@@ -10,12 +10,17 @@ public enum GameMessageType
     OnDiamondSwapped,
     OnDiamondDestroy,
     OnDiamondSwappedFail,
-    OnBoardProcessed,
+    OnProcessBoardStart, //start
+    OnBoardProcessed, //when completely
     OnCombatPhaseStart,
     OnApplyEffectStart,
+    OnApplyCardEffectEnd,
     OnTakeDamage,
     OnCurrentTurnPaused,
-    OnCurrentTurnEnd    
+    OnCurrentTurnEnd,
+    OnCharacterLoaded,
+    OnApplyGainCard,
+    OnValueStolen
 }
 
 public class Message
@@ -45,7 +50,7 @@ public static class MessageManager
     
     private static Dictionary<GameMessageType, List<IMessageHandle>> subscribers = new Dictionary<GameMessageType, List<IMessageHandle>>();
 
-    public static void AddSubcriber(GameMessageType type, IMessageHandle handle)
+    public static void AddSubscriber(GameMessageType type, IMessageHandle handle)
     {
         if (!subscribers.ContainsKey(type))
             subscribers[type] = new List<IMessageHandle>();
@@ -53,7 +58,7 @@ public static class MessageManager
             subscribers[type].Add(handle);
     }
 
-    public static void RemoveSubcriber(GameMessageType type, IMessageHandle handle)
+    public static void RemoveSubscriber(GameMessageType type, IMessageHandle handle)
     {
         if (subscribers.ContainsKey(type))
             if (subscribers[type].Contains(handle))

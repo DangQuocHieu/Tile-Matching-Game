@@ -2,7 +2,7 @@ using System.Collections;
 using DG.Tweening;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ScaleAnimationSO", menuName = "Scriptable Objects/ScaleAnimationSO")]
+[CreateAssetMenu(fileName = "ScaleAnimationSO", menuName = "Scriptable Objects/DiamondAnimation/ScaleAnimationSO")]
 public class ScaleAmimationSO : ScriptableObject
 {
     [SerializeField] private float _duration;

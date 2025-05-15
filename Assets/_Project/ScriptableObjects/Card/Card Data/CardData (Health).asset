@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba9defc1fd864954ba04ca34710ff4d9, type: 3}
+  m_Name: CardData (Health)
+  m_EditorClassIdentifier: 
+  _manaPointToUse: 0
+  _ragePointToUse: 0
+  _cardSprite: {fileID: -8647402063535978869, guid: 241deb5fe5f951d4594a1da40eb58b3e, type: 3}
+  _cardEffectSO: {fileID: 11400000, guid: 442df107451776e4dba2afb7531d323b, type: 2}
+  _type: 3
+  _description: Gain 300 HP

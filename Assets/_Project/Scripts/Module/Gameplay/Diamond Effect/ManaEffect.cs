@@ -1,10 +1,18 @@
 using System.Collections;
 using UnityEngine;
 
-public class ManaEffect : IEffect
+[CreateAssetMenu(fileName = "ManaEffect", menuName = "Scriptable Objects/DiamondEffect/ManaEffect")]
+public class ManaEffect : GameEffectSO
 {
-    public IEnumerator ApplyEffect(UnitStatHandler statHandler, int value)
+    public override IEnumerator Execute(int value)
     {
-        yield return statHandler.AddManaPoint(value);
+        yield return new WaitForSeconds(_applyDuration);
+        BattleManager.Instance.CurrentUnit.StatHandler.AddMagicPoint(value);
+    }
+
+    public override IEnumerator Execute(UnitStatHandler handler, int value)
+    {
+        yield return new WaitForSeconds(_applyDuration);
+        handler.AddMagicPoint(value);
     }
 }

@@ -1,4 +1,4 @@
-using System.Collections;
+    using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using Unity.VisualScripting;
@@ -23,7 +23,7 @@ public class MeleeAttack : AttackStrategySO
             _xOffsetDictionary.Add(i, _xOffset[i]);
         }
     }
-    public override IEnumerator Execute(GameUnit attacker, GameUnit target, TweenCallback callback = null)
+    public override IEnumerator Execute(GameUnit attacker, GameUnit target)
     {
         yield return new WaitForSeconds(_attackDelay);
         int attackIndex = Random.Range(0, _attackCount);
@@ -32,7 +32,6 @@ public class MeleeAttack : AttackStrategySO
         attacker.AnimationHandler.SetRunState();
         yield return attacker.transform.DOMoveX(attacker.transform.position.x + xAttackPos, _dashTime).SetEase(Ease.Linear).WaitForCompletion();
         yield return attacker.AnimationHandler.SetMeleeAttackState(_damageTriggerOffset, attackIndex);
-        callback?.Invoke();
         yield return new WaitForSeconds(_goBackDelay);
         yield return Rotate(attacker.transform);
         attacker.AnimationHandler.SetRunState();

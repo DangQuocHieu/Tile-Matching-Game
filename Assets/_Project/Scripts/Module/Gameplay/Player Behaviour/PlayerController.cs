@@ -1,32 +1,36 @@
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerController : Singleton<PlayerController>, IMessageHandle
 {
     [SerializeField] private GameObject _previousDiamond;
+    public GameObject PreviousDiamond => _previousDiamond;
     [SerializeField] private GameObject _currentDiamond;
+    public GameObject CurrentDiamond => _currentDiamond;
     [SerializeField] private bool _disableControl = true;
     [SerializeField] private Side _side = Side.LeftSide;
     [SerializeField] LayerMask _diamondLayer;
 
     private void OnEnable()
     {
-        MessageManager.AddSubcriber(GameMessageType.OnTurnStart, this);
-        MessageManager.AddSubcriber(GameMessageType.OnDiamondSwappedFail, this);
-        MessageManager.AddSubcriber(GameMessageType.OnDiamondSwapped, this);
+        MessageManager.AddSubscriber(GameMessageType.OnTurnStart, this);
+        MessageManager.AddSubscriber(GameMessageType.OnDiamondSwappedFail, this);
+        MessageManager.AddSubscriber(GameMessageType.OnDiamondSwapped, this);
+        MessageManager.AddSubscriber(GameMessageType.OnProcessBoardStart, this);
     }
 
     private void OnDisable()
     {
-        MessageManager.RemoveSubcriber(GameMessageType.OnTurnStart, this);
-        MessageManager.RemoveSubcriber(GameMessageType.OnDiamondSwappedFail, this);
-        MessageManager.RemoveSubcriber(GameMessageType.OnDiamondSwapped, this);
+        MessageManager.RemoveSubscriber(GameMessageType.OnTurnStart, this);
+        MessageManager.RemoveSubscriber(GameMessageType.OnDiamondSwappedFail, this);
+        MessageManager.RemoveSubscriber(GameMessageType.OnDiamondSwapped, this);
+        MessageManager.RemoveSubscriber(GameMessageType.OnProcessBoardStart, this);
     }
     void Update()
     {
         HandleDiamondSelection();
     }
-
 
     private void HandleDiamondSelection()
     {
@@ -53,11 +57,11 @@ public class PlayerController : Singleton<PlayerController>, IMessageHandle
         switch (message.type)
         {
             case GameMessageType.OnDiamondSwappedFail:
-                _previousDiamond = default;
-                _currentDiamond = default;
+                ResetDiamond();
                 EnableControl();
                 break;
             case GameMessageType.OnTurnStart:
+                ResetDiamond();
                 Side currentSide = (Side)message.data[0];
                 if (_side == currentSide)
                 {
@@ -71,10 +75,13 @@ public class PlayerController : Singleton<PlayerController>, IMessageHandle
             case GameMessageType.OnDiamondSwapped:
                 DisableControl();
                 break;
+            case GameMessageType.OnProcessBoardStart:
+                DisableControl();
+                break;
         }
     }
 
-    private void DisableControl()
+    public void DisableControl()
     {
         _disableControl = true;
     }
@@ -83,4 +90,12 @@ public class PlayerController : Singleton<PlayerController>, IMessageHandle
     {
         _disableControl = false;
     }
+
+    public void ResetDiamond()
+    {
+        _previousDiamond = default;
+        _currentDiamond = default;
+    }
+
+
 }

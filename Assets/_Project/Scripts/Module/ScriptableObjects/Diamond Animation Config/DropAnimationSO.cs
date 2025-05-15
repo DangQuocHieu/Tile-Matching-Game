@@ -1,7 +1,7 @@
 using DG.Tweening;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "DropAnimationSO", menuName = "Scriptable Objects/DropAnimationSO")]
+[CreateAssetMenu(fileName = "DropAnimationSO", menuName = "Scriptable Objects/DiamondAnimation/DropAnimationSO")]
 public class DropAnimationSO : ScriptableObject
 {
     [SerializeField] private float _duration;

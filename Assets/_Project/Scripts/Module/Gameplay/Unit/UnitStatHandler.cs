@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Experimental.GlobalIllumination;
@@ -13,15 +14,17 @@ public class UnitStatHandler : MonoBehaviour
     [Header("Stat")]
     [SerializeField] private int _currentHealthPoint;
     public int CurrentHealthPoint => _currentHealthPoint;
-    [SerializeField] private int _currentManaPoint;
-    public int CurrentManaPoint => _currentManaPoint;
+    [SerializeField] private int _currentMagicPoint;
+    public int CurrentMagicPoint => _currentMagicPoint;
     [SerializeField] private int _currentRagePoint;
     public int CurrentRagePoint => _currentRagePoint;
     [SerializeField] private int _currentShieldPoint;
     public int CurrentShieldPoint => _currentShieldPoint;
-
-    private Dictionary<DiamondType, IEffect> _effectDictionary = new Dictionary<DiamondType, IEffect>();
-    [SerializeField] private float _applyEffectDuration = 1f;
+    [Header("For effect dictionary")]
+    [SerializeField] private DiamondType[] _diamondTypes;
+    [SerializeField] private GameEffectSO[] _diamondEffects;
+    private Dictionary<DiamondType, GameEffectSO> _effectDictionary = new Dictionary<DiamondType, GameEffectSO>();
+    private Dictionary<DiamondType, int> _baseValue = new Dictionary<DiamondType, int>();
     // [SerializeField] private GameObject _shieldIcon;
 
     private UnitAnimationHandler _animationHandler;
@@ -31,6 +34,7 @@ public class UnitStatHandler : MonoBehaviour
         _animationHandler = GetComponent<UnitAnimationHandler>();
         InitializeStat();
         InitializeEffectDictionary();
+        InitializeBaseValueDictionary();
         // InitShieldIconPosition();
     }
 
@@ -41,16 +45,24 @@ public class UnitStatHandler : MonoBehaviour
     private void InitializeStat()
     {
         _currentHealthPoint = _stat.MaxHealthPoint;
-        _currentManaPoint = 0;
+        _currentMagicPoint = 0;
         _currentRagePoint = 0;
     }
 
     private void InitializeEffectDictionary()
     {
-        _effectDictionary.Add(DiamondType.Health, new HealthEffect());
-        _effectDictionary.Add(DiamondType.Mana, new ManaEffect());
-        _effectDictionary.Add(DiamondType.Rage, new RageEffect());
-        _effectDictionary.Add(DiamondType.Shield, new ShieldEffect());
+        for (int i = 0; i < _diamondTypes.Length; i++)
+        {
+            _effectDictionary.Add(_diamondTypes[i], _diamondEffects[i]);
+        }
+    }
+
+    private void InitializeBaseValueDictionary()
+    {
+        _baseValue.Add(DiamondType.Health, _stat.BaseHealthPoint);
+        _baseValue.Add(DiamondType.MagicPoint, _stat.BaseMagicPoint);
+        _baseValue.Add(DiamondType.Rage, _stat.BaseRagePoint);
+        _baseValue.Add(DiamondType.Shield, _stat.BaseShieldPoint);
     }
 
     // private void InitShieldIconPosition()
@@ -63,54 +75,43 @@ public class UnitStatHandler : MonoBehaviour
     //     else _shieldIcon.gameObject.SetActive(false);
     // }
 
-    public IEnumerator AddHealthPoint(int value)
+    public void AddHealthPoint(int healthToAdd)
     {
-        yield return new WaitForSeconds(_applyEffectDuration);
-        int healthToAdd = value * _stat.BaseHealthPoint;
         _currentHealthPoint += healthToAdd;
-        _currentHealthPoint = Mathf.Clamp(_currentHealthPoint,0, _stat.MaxHealthPoint);
-        MessageManager.SendMessage(new Message(GameMessageType.OnApplyEffectStart, new object[] {DiamondType.Health, healthToAdd}));
-        
+        _currentHealthPoint = Mathf.Clamp(_currentHealthPoint, 0, _stat.MaxHealthPoint);
     }
 
-    public IEnumerator AddManaPoint(int value)
+    public void AddMagicPoint(int mpToAdd)
     {
-        yield return new WaitForSeconds(_applyEffectDuration);
-        int manaToAdd = value * _stat.BaseManaPoint;
-        _currentManaPoint += manaToAdd;
-        _currentManaPoint = Mathf.Clamp(_currentManaPoint,0, _stat.MaxManaPoint);
-        MessageManager.SendMessage(new Message(GameMessageType.OnApplyEffectStart, new object[] {DiamondType.Mana, manaToAdd}));
+        _currentMagicPoint += mpToAdd;
+        _currentMagicPoint = Mathf.Clamp(_currentMagicPoint, 0, _stat.MaxManaPoint);
     }
 
-    public IEnumerator AddRagePoint(int value)
+
+    public void AddRagePoint(int rageToAdd)
     {
-        yield return new WaitForSeconds(_applyEffectDuration);
-        int rageToAdd = value * _stat.BaseRagePoint;
         _currentRagePoint += rageToAdd;
-        _currentRagePoint = Mathf.Clamp(_currentRagePoint, 0, _stat.MaxRagePoint);      
-        MessageManager.SendMessage(new Message(GameMessageType.OnApplyEffectStart, new object[] {DiamondType.Rage, rageToAdd}));  
+        _currentRagePoint = Mathf.Clamp(_currentRagePoint, 0, _stat.MaxRagePoint);
+    }
+    public void AddShieldPoint(int shieldToAdd)
+    {
+        _currentShieldPoint += shieldToAdd;
     }
 
-    public IEnumerator AddShieldPoint(int value)
-    {
-        yield return new WaitForSeconds(_applyEffectDuration);
-        int shieldToAdd = value * _stat.BaseShieldPoint;
-        _currentShieldPoint += shieldToAdd; 
-        MessageManager.SendMessage(new Message(GameMessageType.OnApplyEffectStart, new object[] {DiamondType.Shield, shieldToAdd}));
-    }
 
     public IEnumerator ApplyEffect(DiamondType diamondType, int value)
     {
-        if(_effectDictionary.ContainsKey(diamondType))
+        if (_effectDictionary.ContainsKey(diamondType))
         {
-            yield return _effectDictionary[diamondType].ApplyEffect(this, value);
+            yield return _effectDictionary[diamondType].Execute(value);
+            MessageManager.SendMessage(new Message(GameMessageType.OnApplyEffectStart, new object[] { diamondType, value }));
         }
     }
 
     public int CalculateDamage(int value)
     {
         int damage = value * _stat.BaseDamage;
-        if(_currentRagePoint == _stat.RagePointToIncreaseDamage)
+        if (_currentRagePoint >= _stat.RagePointToIncreaseDamage)
         {
             _currentRagePoint -= _stat.RagePointToIncreaseDamage;
             _currentRagePoint = Mathf.Clamp(_currentRagePoint, 0, _stat.MaxRagePoint);
@@ -119,23 +120,72 @@ public class UnitStatHandler : MonoBehaviour
         return damage;
     }
 
+    public int CalculatePoint(DiamondType type, int diamondCount)
+    {
+        if (!_baseValue.ContainsKey(type)) return 0;
+        return _baseValue[type] * diamondCount;
+
+    }
+
     public void TakeDamage(int damage)
     {
-        if(_currentShieldPoint != 0)
+        if (_currentShieldPoint != 0)
         {
             _currentShieldPoint = 0;
             damage = 0;
         }
         _currentHealthPoint -= damage;
-        _currentHealthPoint = Mathf.Clamp(_currentHealthPoint,0, _stat.MaxHealthPoint);
-        if(damage != 0)
+        _currentHealthPoint = Mathf.Clamp(_currentHealthPoint, 0, _stat.MaxHealthPoint);
+        if (damage != 0)
         {
             _animationHandler.SetHurtState();
         }
-        MessageManager.SendMessage(new Message(GameMessageType.OnTakeDamage, new object[] {damage}));
-        if(damage == 0)
+        MessageManager.SendMessage(new Message(GameMessageType.OnTakeDamage, new object[] { damage }));
+    }
+
+    public void DealDamage(int damage)
+    {
+        BattleManager.Instance.EnemyUnit.StatHandler.TakeDamage(damage);
+    }
+
+
+    public void ApplyDiamondAttack()
+    {
+        int diamondCount = BattleManager.Instance.GetAttackMatchedCount();
+        int damage = CalculateDamage(diamondCount);
+        DealDamage(damage);
+    }
+
+    public void ResetShieldPoint()
+    {
+        _currentShieldPoint = 0;
+    }
+
+    public IEnumerator OnStolen(DiamondType diamondType, int value)
+    {
+        if (_effectDictionary.ContainsKey(diamondType))
         {
-            //DIE ?
+            yield return _effectDictionary[diamondType].Execute(this, -value);
+            MessageManager.SendMessage(new Message(GameMessageType.OnValueStolen, new object[] { diamondType, -value }));
         }
+    }
+
+
+    public List<DiamondType> GetStealableTypes()
+    {
+        List<DiamondType> stealableTypes = new List<DiamondType>();
+        if(_currentHealthPoint > 0)
+        {
+            stealableTypes.Add(DiamondType.Health);
+        }
+        if(_currentMagicPoint > 0)
+        {
+            stealableTypes.Add(DiamondType.MagicPoint);
+        }
+        if(_currentRagePoint > 0)
+        {
+            stealableTypes.Add(DiamondType.Rage);
+        }
+        return stealableTypes;
     }
 }

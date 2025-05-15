@@ -1,10 +1,17 @@
 using System.Collections;
 using UnityEngine;
 
-public class HealthEffect : IEffect
+[CreateAssetMenu(fileName = "HealthEffect", menuName = "Scriptable Objects/DiamondEffect/HealthEffect")]
+public class HealthEffect : GameEffectSO 
 {
-    public IEnumerator ApplyEffect(UnitStatHandler statHandler, int value)
+    public override IEnumerator Execute(int value)
     {
-        yield return statHandler.AddHealthPoint(value);
+        yield return new WaitForSeconds(_applyDuration);
+        BattleManager.Instance.CurrentUnit.StatHandler.AddHealthPoint(value);
+    }
+    public override IEnumerator Execute(UnitStatHandler handler, int value)
+    {
+        yield return new WaitForSeconds(_applyDuration);
+        handler.AddHealthPoint(value);
     }
 }

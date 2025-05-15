@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class CharacterSelectionController : MonoBehaviour
+public class CharacterSelectionController : Singleton<CharacterSelectionController>
 {
     [SerializeField] private GridLayoutGroup _gridGroup;
     [SerializeField] List<CharacterSelectionButton> _characterButton;
@@ -14,8 +15,9 @@ public class CharacterSelectionController : MonoBehaviour
     [SerializeField] private int _enemyIndex = 1;
     private int _gridColumn;
 
-    [SerializeField] CharacterCard _playerCard;
-    [SerializeField] CharacterCard _enemyCard;
+    [SerializeField] private CharacterCard _playerCard;
+    [SerializeField] private CharacterCard _enemyCard;
+
     private void Start()
     {
         Init();
@@ -90,5 +92,11 @@ public class CharacterSelectionController : MonoBehaviour
     private void UpdateEnemyCard()
     {
         _enemyCard.UpdateCardValue(_characterButton[_enemyIndex].Config);
+    }
+
+    public void SaveCharacter()
+    {
+        PlayerPrefs.SetString("Player Character", _characterButton[_playerIndex].Config.Stat.UnitId);
+        PlayerPrefs.SetString("Enemy Character", _characterButton[_enemyIndex].Config.Stat.UnitId);
     }
 }

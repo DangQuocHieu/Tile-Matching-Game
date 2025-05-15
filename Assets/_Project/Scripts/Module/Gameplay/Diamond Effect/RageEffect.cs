@@ -1,10 +1,17 @@
 using System.Collections;
 using UnityEngine;
 
-public class RageEffect : IEffect
+[CreateAssetMenu(fileName = "RageEffect", menuName = "Scriptable Objects/DiamondEffect/RageEffect")]
+public class RageEffect : GameEffectSO
 {
-    public IEnumerator ApplyEffect(UnitStatHandler statHandler, int value)
+    public override IEnumerator Execute(int value)
     {
-        yield return statHandler.AddRagePoint(value);
+        yield return new WaitForSeconds(_applyDuration);
+        BattleManager.Instance.CurrentUnit.StatHandler.AddRagePoint(value);
+    }
+    public override IEnumerator Execute(UnitStatHandler handler, int value)
+    {
+        yield return new WaitForSeconds(_applyDuration);
+        handler.AddRagePoint(value);
     }
 }

@@ -5,7 +5,7 @@ public class DiamondController : Singleton<DiamondController>
     public void SwapDiamond(GameObject previousDiamond, GameObject currentDiamond)
     {
         if(previousDiamond == default) return;
-        if (AreNeighbors(previousDiamond.transform.position, currentDiamond.transform.position))
+        if (previousDiamond != null && currentDiamond != null && AreNeighbors(previousDiamond.transform.position, currentDiamond.transform.position))
         {
             MessageManager.SendMessage(new Message(GameMessageType.OnDiamondSwapped, new object[] { previousDiamond, currentDiamond }));
         }        

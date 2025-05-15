@@ -10,14 +10,14 @@ public class DiamondHighlight : Singleton<DiamondHighlight>, IMessageHandle
     }
     void OnEnable()
     {
-        MessageManager.AddSubcriber(GameMessageType.OnDiamondSwappedFail, this);
-        MessageManager.AddSubcriber(GameMessageType.OnDiamondSwapped, this);
+        MessageManager.AddSubscriber(GameMessageType.OnDiamondSwappedFail, this);
+        MessageManager.AddSubscriber(GameMessageType.OnDiamondSwapped, this);
     }
 
     void OnDisable()
     {
-        MessageManager.RemoveSubcriber(GameMessageType.OnDiamondSwappedFail, this);      
-        MessageManager.RemoveSubcriber(GameMessageType.OnDiamondSwapped, this);
+        MessageManager.RemoveSubscriber(GameMessageType.OnDiamondSwappedFail, this);      
+        MessageManager.RemoveSubscriber(GameMessageType.OnDiamondSwapped, this);
     }
 
     public void Handle(Message message)

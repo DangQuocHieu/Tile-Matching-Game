@@ -1,4 +1,5 @@
-using System.Collections;   
+using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 public enum Side
 {
@@ -14,22 +15,20 @@ public class TurnManager : Singleton<TurnManager>, IMessageHandle
     private Coroutine _currentTurnCoroutine;
     private bool inProgress = true;
 
-    private void Start()
-    {
-        base.Awake();
-        StartCoroutine(LeftTurnCoroutine());
-    }
-
     private void OnEnable()
     {
-        MessageManager.AddSubcriber(GameMessageType.OnCurrentTurnPaused, this);
-        MessageManager.AddSubcriber(GameMessageType.OnCurrentTurnEnd, this);
+        MessageManager.AddSubscriber(GameMessageType.OnCharacterLoaded, this);
+        MessageManager.AddSubscriber(GameMessageType.OnCurrentTurnPaused, this);
+        MessageManager.AddSubscriber(GameMessageType.OnCurrentTurnEnd, this);
+        MessageManager.AddSubscriber(GameMessageType.OnApplyCardEffectEnd, this);
     }
 
     private void OnDisable()
     {
-        MessageManager.RemoveSubcriber(GameMessageType.OnCurrentTurnPaused, this);
-        MessageManager.RemoveSubcriber(GameMessageType.OnCurrentTurnEnd, this);
+        MessageManager.RemoveSubscriber(GameMessageType.OnCharacterLoaded, this);
+        MessageManager.RemoveSubscriber(GameMessageType.OnCurrentTurnPaused, this);
+        MessageManager.RemoveSubscriber(GameMessageType.OnCurrentTurnEnd, this);
+        MessageManager.RemoveSubscriber(GameMessageType.OnApplyCardEffectEnd, this);
     }
 
     public IEnumerator LeftTurnCoroutine()
@@ -60,7 +59,7 @@ public class TurnManager : Singleton<TurnManager>, IMessageHandle
             yield return null;
         }
         EndCurrentTurn();
-        StartNextTurn();
+        Invoke("StartNextTurn", 2f);
     }
 
     private IEnumerator TurnStartDelay()
@@ -91,21 +90,31 @@ public class TurnManager : Singleton<TurnManager>, IMessageHandle
         }
     }
 
-    private void PauseCurrentTurn()
+    public void PauseCurrentTurn()
     {
         inProgress = false;
     }
     
+    public void ContinueCurrentTurn()
+    {
+        inProgress = true;
+    }
     public void Handle(Message message)
     {
         switch(message.type)
         {
+            case GameMessageType.OnCharacterLoaded:
+                StartCoroutine(LeftTurnCoroutine());
+                break;
             case GameMessageType.OnCurrentTurnPaused:
                 PauseCurrentTurn();
                 break;
             case GameMessageType.OnCurrentTurnEnd:
                 EndCurrentTurn();
                 Invoke("StartNextTurn", 2f);
+                break;
+            case GameMessageType.OnApplyCardEffectEnd:
+                ContinueCurrentTurn();
                 break;
         }
     }

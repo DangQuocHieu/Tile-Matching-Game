@@ -109,7 +109,12 @@ MonoBehaviour:
   _currentManaPoint: 0
   _currentRagePoint: 0
   _currentShieldPoint: 0
-  _applyEffectDuration: 1
+  _diamondTypes: 01000000020000000300000004000000
+  _diamondEffects:
+  - {fileID: 11400000, guid: 935a0e4590a81b4488ad58c41e12b492, type: 2}
+  - {fileID: 11400000, guid: c13a4dca1dbad09408d58bcde2975144, type: 2}
+  - {fileID: 11400000, guid: 16dff79350a66314fb45fae77e409bee, type: 2}
+  - {fileID: 11400000, guid: 4d6e7134f4265644dabc210339160d9d, type: 2}
 --- !u!114 &8192109864117174715
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -135,6 +140,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _meleeAttack: {fileID: 11400000, guid: eb7fcd0182cf92c46b302ab2b1247ef2, type: 2}
+  _stealAttack: {fileID: 11400000, guid: b35093e333658674a9e6cc60ae960bb0, type: 2}
 --- !u!95 &1221396923982069243
 Animator:
   serializedVersion: 7
@@ -169,4 +175,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ec9c5f3d25f8a645ad77c4e3fd95c8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _unitSide: 0
+  _unitSide: 2

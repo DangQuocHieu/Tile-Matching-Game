@@ -13,13 +13,14 @@ MonoBehaviour:
   m_Name: Wind Hashashin
   m_EditorClassIdentifier: 
   _unitId: Wind Hashashin
-  _maxHealthPoint: 500
+  _maxHealthPoint: 1853
   _maxManaPoint: 200
   _maxRagePoint: 200
-  _baseHealthPoint: 20
-  _baseManaPoint: 20
-  _baseRagePoint: 20
-  _baseDamage: 100
+  _baseHealthPoint: 23
+  _baseMagicPoint: 21
+  _baseRagePoint: 26
+  _baseDamage: 126
   _baseShieldPoint: 20
+  _baseStealPoint: 27
   _ragePointToIncreaseDamage: 100
-  _damageScale: 1.5
+  _damageScale: 1.25
