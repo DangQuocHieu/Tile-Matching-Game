@@ -19,6 +19,7 @@ public enum GameMessageType
     OnCurrentTurnPaused,
     OnCurrentTurnEnd,
     OnCharacterLoaded,
+    OnCharacterSelectionButtonLoaded,
     OnApplyGainCard,
     OnValueStolen
 }

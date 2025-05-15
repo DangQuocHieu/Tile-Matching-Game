@@ -21,6 +21,6 @@ MonoBehaviour:
   _baseRagePoint: 26
   _baseDamage: 126
   _baseShieldPoint: 20
-  _baseStealPoint: 27
+  _baseStealPoint: 34
   _ragePointToIncreaseDamage: 100
   _damageScale: 1.25

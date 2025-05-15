@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: CardData (Hammer)
   m_EditorClassIdentifier: 
   _manaPointToUse: 100
+  _ragePointToUse: 0
   _cardSprite: {fileID: -5320615098148945085, guid: 5a3be1d89a2006c4db53bdb53c2dc6ff, type: 3}
-  _effectValue: 500
   _cardEffectSO: {fileID: 11400000, guid: dd4a24d07d5b3ef428523b645d68fa16, type: 2}
   _type: 0
+  _description: Deal 300 DMG

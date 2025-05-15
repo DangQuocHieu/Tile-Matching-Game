@@ -2,5 +2,6 @@ using UnityEngine;
 
 public enum ScreenKey
 {
-    CardSelect
+    CardSelect,
+    BackgroundSelect,
 }

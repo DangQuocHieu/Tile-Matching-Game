@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Card Data (Spell Attack)
   m_EditorClassIdentifier: 
   _manaPointToUse: 100
+  _ragePointToUse: 0
   _cardSprite: {fileID: -7383424437152887743, guid: 0f59e2a0100c33f48b29b8188b0b9d16, type: 3}
-  _effectValue: 500
   _cardEffectSO: {fileID: 11400000, guid: e1f2d2411a87daf488aaf7d38114d0e9, type: 2}
   _type: 0
+  _description: Deal 300 DMG

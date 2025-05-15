@@ -2,7 +2,9 @@ using UnityEngine.UI;
 using UnityEngine;
 using TMPro;
 using System.Collections;
-public class GameCard : MonoBehaviour
+using Unity.VisualScripting;
+using UnityEngine.EventSystems;
+public class GameCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] private CardData _data;
     public CardData Data => _data;
@@ -10,6 +12,9 @@ public class GameCard : MonoBehaviour
     [SerializeField] private Image _cardImage;
     [SerializeField] private Button _cardButton;
     [SerializeField] private CanvasGroup _canvasGroup;
+    [SerializeField] private RectTransform _descriptionPanel;
+    [SerializeField] private TextMeshProUGUI _mpCostText;
+    [SerializeField] private TextMeshProUGUI _rpCostText;
 
     void Awake()
     {
@@ -43,23 +48,33 @@ public class GameCard : MonoBehaviour
     public void DisableCard()
     {
         _canvasGroup.interactable = false;
-        _canvasGroup.blocksRaycasts = false;
     }
 
     public void EnableCard()
     {
         _canvasGroup.alpha = 1;
         _canvasGroup.interactable = true;
-        _canvasGroup.blocksRaycasts = true;
     }
     public IEnumerator ApplyCardEffect()
     {
         PlayerCardController.Instance.DisableAllCard();
         TurnManager.Instance.PauseCurrentTurn();
         BattleManager.Instance.CurrentUnit.StatHandler.AddMagicPoint(-_data.ManaPointToUse);
+        BattleManager.Instance.CurrentUnit.StatHandler.AddRagePoint(-_data.RagePointToUse);
         yield return _data.CardEffectSO.Activate();
         _data.CardEffectSO.OnComplete(gameObject);
-    }   
+    }
 
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (_data.ManaPointToUse == 0 && _data.RagePointToUse == 0) return;
+        _descriptionPanel.gameObject.SetActive(true);
+        _mpCostText.text = "Magic Point: " + _data.ManaPointToUse;
+        _rpCostText.text = "Rage Point: " + _data.RagePointToUse;
+    }
 
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        _descriptionPanel.gameObject.SetActive(false);
+    }
 }

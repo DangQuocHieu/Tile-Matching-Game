@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class CardSelectionScreen : UIScreen
+public class BackgroundSelectionScreen : UIScreen
 {
     public override void Hide()
     {

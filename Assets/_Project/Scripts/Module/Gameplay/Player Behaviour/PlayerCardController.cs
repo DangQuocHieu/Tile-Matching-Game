@@ -10,15 +10,11 @@ public class PlayerCardController : Singleton<PlayerCardController>, IMessageHan
     [SerializeField] private Side _side = Side.LeftSide;
     
     private int _currentManaPoint;
+    private int _currentRagePoint;
 
-    protected override void Awake()
+    void Start()
     {
-        base.Awake();
         InitCard();
-    }
-
-    void Update()
-    {
     }
     void OnEnable()
     {
@@ -87,9 +83,10 @@ public class PlayerCardController : Singleton<PlayerCardController>, IMessageHan
     private void EnableAllCard()
     {
         _currentManaPoint = transform.GetChild(0).GetComponent<UnitStatHandler>().CurrentMagicPoint;
+        _currentRagePoint = transform.GetChild(0).GetComponent<UnitStatHandler>().CurrentRagePoint;
         foreach (var card in _gameCards)
         {
-            if (card != null && _currentManaPoint >= card.Data.ManaPointToUse)
+            if (card != null && _currentManaPoint >= card.Data.ManaPointToUse && _currentRagePoint >= card.Data.RagePointToUse) 
             {
                 card.EnableCard();
             }

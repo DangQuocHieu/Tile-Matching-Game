@@ -111,7 +111,6 @@ public class GameplayScreenHUD : MonoBehaviour, IMessageHandle
                     DiamondType diamondType = (DiamondType)message.data[0];
                     int value = (int)message.data[1];
                     ShowFloatingText(diamondType, value, showInCurrentUnitPosition: true);
-                    AnimateMatchedDiamondUI();
                     break;
                 }
 
@@ -142,14 +141,6 @@ public class GameplayScreenHUD : MonoBehaviour, IMessageHandle
         _floatingTextDictionary.Add(DiamondType.MagicPoint, _magicPointFloatingText);
         _floatingTextDictionary.Add(DiamondType.Rage, _rageFloatingText);
         _floatingTextDictionary.Add(DiamondType.Shield, _shieldFloatingText);
-    }
-
-    private void AnimateMatchedDiamondUI()
-    {
-        if (_turnDataContainer.transform.childCount == 0) return;
-        Transform matchDiamondUI = _turnDataContainer.transform.GetChild(_currentIndex);
-        ++_currentIndex;
-        _scaleAnim.ScaleOut(matchDiamondUI.gameObject);
     }
 
     private void ShowFloatingText(DiamondType type, int value, bool showInCurrentUnitPosition)

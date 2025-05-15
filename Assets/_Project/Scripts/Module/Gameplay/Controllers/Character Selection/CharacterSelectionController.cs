@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class CharacterSelectionController : Singleton<CharacterSelectionController>
+public class CharacterSelectionController : Singleton<CharacterSelectionController>, IMessageHandle
 {
     [SerializeField] private GridLayoutGroup _gridGroup;
     [SerializeField] List<CharacterSelectionButton> _characterButton;
@@ -18,19 +17,24 @@ public class CharacterSelectionController : Singleton<CharacterSelectionControll
     [SerializeField] private CharacterCard _playerCard;
     [SerializeField] private CharacterCard _enemyCard;
 
-    private void Start()
-    {
-        Init();
-        SetUpSelector();
-    }
-
-    private void Init()
+    public void Init()
     {
         _gridColumn = _gridGroup.constraintCount;
         _characterButton = _gridGroup.GetComponentsInChildren<CharacterSelectionButton>().ToList();
+        SetUpSelector();
     }
 
-    private void SetUpSelector()
+    void OnEnable()
+    {
+        MessageManager.AddSubscriber(GameMessageType.OnCharacterSelectionButtonLoaded, this);
+    }
+
+    void OnDisable()
+    {
+        MessageManager.AddSubscriber(GameMessageType.OnCharacterSelectionButtonLoaded, this);
+    }
+
+    public void SetUpSelector()
     {
         UpdateSelectorPosition();
         _playerSelector.gameObject.SetActive(true);
@@ -46,8 +50,9 @@ public class CharacterSelectionController : Singleton<CharacterSelectionControll
     }
 
 
-    private void UpdateSelectorPosition()
+    public void UpdateSelectorPosition()
     {
+        if(_characterButton.Count == 0) return;
         _playerSelector.position = _characterButton[_playerIndex].transform.position;
         _enemySelector.position = _characterButton[_enemyIndex].transform.position;
     }
@@ -55,7 +60,7 @@ public class CharacterSelectionController : Singleton<CharacterSelectionControll
     private void MoveSelector(ref int index, int delta)
     {
         int newIndex = index + delta;
-        if(newIndex >= 0 && newIndex < _characterButton.Count)
+        if (newIndex >= 0 && newIndex < _characterButton.Count)
         {
             index = newIndex;
         }
@@ -63,18 +68,18 @@ public class CharacterSelectionController : Singleton<CharacterSelectionControll
 
     private void HandlePlayerSelectorInput()
     {
-        if(Input.GetKeyDown(KeyCode.W)) MoveSelector(ref _playerIndex, -_gridColumn);
-        if(Input.GetKeyDown(KeyCode.S)) MoveSelector(ref _playerIndex, _gridColumn);
-        if(Input.GetKeyDown(KeyCode.A)) MoveSelector(ref _playerIndex, -1);
-        if(Input.GetKeyDown(KeyCode.D)) MoveSelector(ref _playerIndex, 1);
+        if (Input.GetKeyDown(KeyCode.W)) MoveSelector(ref _playerIndex, -_gridColumn);
+        if (Input.GetKeyDown(KeyCode.S)) MoveSelector(ref _playerIndex, _gridColumn);
+        if (Input.GetKeyDown(KeyCode.A)) MoveSelector(ref _playerIndex, -1);
+        if (Input.GetKeyDown(KeyCode.D)) MoveSelector(ref _playerIndex, 1);
     }
 
     private void HandleEnemySelectorInput()
     {
-        if(Input.GetKeyDown(KeyCode.UpArrow)) MoveSelector(ref _enemyIndex, -_gridColumn);
-        if(Input.GetKeyDown(KeyCode.DownArrow)) MoveSelector(ref _enemyIndex, _gridColumn);
-        if(Input.GetKeyDown(KeyCode.LeftArrow)) MoveSelector(ref _enemyIndex, -1);
-        if(Input.GetKeyDown(KeyCode.RightArrow)) MoveSelector(ref _enemyIndex, 1);
+        if (Input.GetKeyDown(KeyCode.UpArrow)) MoveSelector(ref _enemyIndex, -_gridColumn);
+        if (Input.GetKeyDown(KeyCode.DownArrow)) MoveSelector(ref _enemyIndex, _gridColumn);
+        if (Input.GetKeyDown(KeyCode.LeftArrow)) MoveSelector(ref _enemyIndex, -1);
+        if (Input.GetKeyDown(KeyCode.RightArrow)) MoveSelector(ref _enemyIndex, 1);
 
     }
 
@@ -86,11 +91,13 @@ public class CharacterSelectionController : Singleton<CharacterSelectionControll
 
     private void UpdatePlayerCard()
     {
+        if(_characterButton.Count == 0) return;
         _playerCard.UpdateCardValue(_characterButton[_playerIndex].Config);
     }
 
     private void UpdateEnemyCard()
     {
+        if(_characterButton.Count == 0) return;
         _enemyCard.UpdateCardValue(_characterButton[_enemyIndex].Config);
     }
 
@@ -98,5 +105,16 @@ public class CharacterSelectionController : Singleton<CharacterSelectionControll
     {
         PlayerPrefs.SetString("Player Character", _characterButton[_playerIndex].Config.Stat.UnitId);
         PlayerPrefs.SetString("Enemy Character", _characterButton[_enemyIndex].Config.Stat.UnitId);
+    }
+
+    public void Handle(Message message)
+    {
+        switch(message.type)
+        {
+            case GameMessageType.OnCharacterSelectionButtonLoaded:
+                Init();
+                Debug.Log("INIT");
+                break;
+        }
     }
 }

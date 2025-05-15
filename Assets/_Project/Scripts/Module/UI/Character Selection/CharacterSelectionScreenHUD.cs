@@ -11,18 +11,18 @@ public class CharacterSelectionScreenHUD : MonoBehaviour
     [SerializeField] private CharacterSelectionButton _selectButtonPrefab;
     [SerializeField] private Button _cardSelectButton;
     [SerializeField] private Button _playButton;
+    [SerializeField] private Button _backgroundSelectionButton;
     private CanvasGroup _canvasGroup;
     
     void Awake()
     {
-        Init();
-
         _canvasGroup = GetComponent<CanvasGroup>();
     }
 
     void Start()
     {
         AddButtonListener();
+        Init();
     }
 
 
@@ -38,6 +38,7 @@ public class CharacterSelectionScreenHUD : MonoBehaviour
             var button = Instantiate(_selectButtonPrefab, _characterSelectionBar);
             button.Init(config);            
         }
+        MessageManager.SendMessage(new Message(GameMessageType.OnCharacterSelectionButtonLoaded));
     }
 
     private void AddButtonListener()
@@ -49,6 +50,9 @@ public class CharacterSelectionScreenHUD : MonoBehaviour
         _playButton.onClick.AddListener(()=>{
             CharacterSelectionController.Instance.SaveCharacter();
             SceneManager.LoadSceneAsync("Gameplay Scene");
+        });
+        _backgroundSelectionButton.onClick.AddListener(()=>{
+            ScreenManager.Instance.ShowScreen(ScreenKey.BackgroundSelect);
         });
     }
 }
