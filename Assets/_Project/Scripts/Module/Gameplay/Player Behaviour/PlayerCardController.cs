@@ -86,7 +86,7 @@ public class PlayerCardController : Singleton<PlayerCardController>, IMessageHan
         _currentRagePoint = transform.GetChild(0).GetComponent<UnitStatHandler>().CurrentRagePoint;
         foreach (var card in _gameCards)
         {
-            if (card != null && _currentManaPoint >= card.Data.ManaPointToUse && _currentRagePoint >= card.Data.RagePointToUse) 
+            if (card != null && _currentManaPoint >= card.Data.MpPointToUse && _currentRagePoint >= card.Data.RagePointToUse) 
             {
                 card.EnableCard();
             }

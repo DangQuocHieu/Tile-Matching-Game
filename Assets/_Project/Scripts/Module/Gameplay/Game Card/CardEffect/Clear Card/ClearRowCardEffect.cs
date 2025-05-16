@@ -13,11 +13,8 @@ public class ClearRowCardEffect : CardEffectSO
             PlayerController.Instance.ResetDiamond();
             yield return new WaitUntil(() => PlayerController.Instance.CurrentDiamond != default);
             PlayerController.Instance.DisableControl();
+            DiamondHighlight.Instance.UnHighlight();
             BoardManager.Instance.ClearEntireRow(PlayerController.Instance.CurrentDiamond);
         }
-    }
-    public override void OnComplete(GameObject gameObject)
-    {
-        Destroy(gameObject);
     }
 }

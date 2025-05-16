@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba9defc1fd864954ba04ca34710ff4d9, type: 3}
   m_Name: CardData (Cross Clear)
   m_EditorClassIdentifier: 
-  _manaPointToUse: 200
+  _cardType: 0
+  _mpPointToUse: 200
   _ragePointToUse: 100
   _cardSprite: {fileID: 7682336483022426328, guid: 3f97f4e0ecdd84a48b1c9c9dc5c482d3, type: 3}
   _cardEffectSO: {fileID: 11400000, guid: f3d1feac6fbdd6c47b3fb7dfcc2e020a, type: 2}
-  _type: 0
   _description: ' Clear row and column'

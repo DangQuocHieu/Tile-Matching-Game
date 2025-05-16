@@ -9,11 +9,6 @@ public class HealthGainCardEffect : CardEffectSO
         MessageManager.SendMessage(new Message(GameMessageType.OnApplyGainCard, new object[] { DiamondType.Health, _effectValue }));
         yield return new WaitForSeconds(_applyDuration);
         BattleManager.Instance.CurrentUnit.StatHandler.AddHealthPoint(_effectValue);
-
-    }
-    public override void OnComplete(GameObject gameObject)
-    {
         MessageManager.SendMessage(new Message(GameMessageType.OnApplyCardEffectEnd));
-        Destroy(gameObject);
     }
 }

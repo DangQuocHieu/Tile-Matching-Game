@@ -12,9 +12,9 @@ public class TurnManager : Singleton<TurnManager>, IMessageHandle
     [SerializeField] private float _turnDuration;
     public float TurnDuration => _turnDuration;
     [SerializeField] private float _turnStartDelay;
+    [SerializeField] private float _blockControllerTime = 1f;
     private Coroutine _currentTurnCoroutine;
     private bool inProgress = true;
-
     private void OnEnable()
     {
         MessageManager.AddSubscriber(GameMessageType.OnCharacterLoaded, this);
@@ -57,6 +57,10 @@ public class TurnManager : Singleton<TurnManager>, IMessageHandle
                 timeRemaining -= Time.deltaTime;
             }
             yield return null;
+            if (timeRemaining <= _blockControllerTime)
+            {
+                PlayerController.Instance.DisableControl();
+            }
         }
         EndCurrentTurn();
         Invoke("StartNextTurn", 2f);

@@ -2,11 +2,10 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class ScreenManager : PersistentSingleton<ScreenManager>
+public class ScreenManager : PersistentSingleton<ScreenManager>, IMessageHandle
 {
     private Stack<ScreenKey> _stackScreen = new Stack<ScreenKey>();
     private Dictionary<ScreenKey, UIScreen> _screenDictionary = new Dictionary<ScreenKey, UIScreen>();
-    [SerializeField] private ScreenKey _initialScreenKey;
 
     protected override void Awake()
     {
@@ -14,6 +13,21 @@ public class ScreenManager : PersistentSingleton<ScreenManager>
         InitScreenDictionary();
         InitScreen();
     }
+
+    private void OnEnable()
+    {
+        MessageManager.AddSubscriber(GameMessageType.OnGameWin, this);
+        MessageManager.AddSubscriber(GameMessageType.OnGameLose, this);
+        MessageManager.AddSubscriber(GameMessageType.OnGameRestart, this);
+    }
+
+    private void OnDisable()
+    {
+        MessageManager.RemoveSubscriber(GameMessageType.OnGameWin, this);
+        MessageManager.RemoveSubscriber(GameMessageType.OnGameLose, this);
+        MessageManager.RemoveSubscriber(GameMessageType.OnGameRestart, this);
+    }
+
     private void InitScreenDictionary()
     {
         for (int i = 0; i < transform.childCount; i++)
@@ -46,11 +60,29 @@ public class ScreenManager : PersistentSingleton<ScreenManager>
         ScreenKey currentScreen = _stackScreen.Peek();
         _screenDictionary[currentScreen].Hide();
         _stackScreen.Pop();
-        if(_stackScreen.Count != 0)
+        if (_stackScreen.Count != 0)
         {
             _screenDictionary[_stackScreen.Peek()].Show();
         }
     }
 
+    public void Handle(Message message)
+    {
+        switch (message.type)
+        {
+            case GameMessageType.OnGameWin:
+                ShowScreen(ScreenKey.GameEnd);
+                _screenDictionary[ScreenKey.GameEnd].GetComponent<GameEndScreen>().SetTitleText("YOU WIN");
+                break;
 
+            case GameMessageType.OnGameLose:
+                ShowScreen(ScreenKey.GameEnd);
+                _screenDictionary[ScreenKey.GameEnd].GetComponent<GameEndScreen>().SetTitleText("YOU LOSE");
+                break;
+
+            case GameMessageType.OnGameRestart:
+                InitScreen();
+                break;
+        }
+    }
 }

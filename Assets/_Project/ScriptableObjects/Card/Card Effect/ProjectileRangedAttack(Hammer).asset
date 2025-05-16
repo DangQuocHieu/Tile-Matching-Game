@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: ProjectileRangedAttack(Hammer)
   m_EditorClassIdentifier: 
   _applyDuration: 1
-  _effectValue: 500
+  _effectValue: 300
   _projectilePrefab: {fileID: 4047375658406018325, guid: e977711552272a548b70e142af3a2076, type: 3}
   _yOffset: 2

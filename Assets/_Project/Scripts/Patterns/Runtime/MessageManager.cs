@@ -21,7 +21,11 @@ public enum GameMessageType
     OnCharacterLoaded,
     OnCharacterSelectionButtonLoaded,
     OnApplyGainCard,
-    OnValueStolen
+    OnValueStolen,
+    OnGameUnitDied,
+    OnGameWin,
+    OnGameLose,
+    OnGameRestart,
 }
 
 public class Message

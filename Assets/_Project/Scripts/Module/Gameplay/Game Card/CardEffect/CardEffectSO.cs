@@ -5,5 +5,5 @@ public abstract class CardEffectSO : ScriptableObject, ICardEffect
 {
     [SerializeField] protected float _applyDuration;
     public abstract IEnumerator Activate();
-    public abstract void OnComplete(GameObject gameObject);
+    
 }

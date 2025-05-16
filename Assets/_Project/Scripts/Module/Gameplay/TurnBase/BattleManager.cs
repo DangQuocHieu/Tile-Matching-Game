@@ -19,16 +19,16 @@ public class BattleManager : Singleton<BattleManager>, IMessageHandle
     public GameUnit CurrentUnit => _currentUnit;
     [SerializeField] private GameUnit _enemyUnit;
     public GameUnit EnemyUnit => _enemyUnit;
-    
+
     [SerializeField] private string _attackSortingLayerName = "Attack";
     [SerializeField] private string _unitSortingLayerName = "Unit";
     private SortedDictionary<DiamondType, int> _matchedDiamondDictionary = new SortedDictionary<DiamondType, int>();
 
     [SerializeField] private bool _loadCharacter = true;
-    
+
     private void Start()
     {
-        if(_loadCharacter) LoadCharacter();
+        if (_loadCharacter) LoadCharacter();
         else InitSide();
     }
 
@@ -57,7 +57,7 @@ public class BattleManager : Singleton<BattleManager>, IMessageHandle
         GameUnit enemyUnit = _gameUnitPrefabs.Where(T => T.GetComponent<UnitStatHandler>().Stat.UnitId == enemyCharacterId).FirstOrDefault();
         _leftUnit = Instantiate(playerUnit, _playerController.transform);
         _rightUnit = Instantiate(enemyUnit, _enemyController.transform);
-        InitSide(); 
+        InitSide();
     }
 
     private void InitSide()
@@ -90,7 +90,7 @@ public class BattleManager : Singleton<BattleManager>, IMessageHandle
 
     private void ChangeCurrentUnit(Side side)
     {
-        
+
         GameUnit unit = side == Side.LeftSide ? _leftUnit : _rightUnit;
         _currentUnit = unit;
         _enemyUnit = _currentUnit == _leftUnit ? _rightUnit : _leftUnit;
@@ -118,7 +118,15 @@ public class BattleManager : Singleton<BattleManager>, IMessageHandle
         yield return new WaitForSeconds(1f);
         yield return ApplyEffectPhase();
         yield return AttackPhase();
-        MessageManager.SendMessage(new Message(GameMessageType.OnCurrentTurnEnd));
+
+        if (!_enemyUnit.StatHandler.IsDeath())
+        {
+            MessageManager.SendMessage(new Message(GameMessageType.OnCurrentTurnEnd));
+        }
+        else
+        {
+            yield return _enemyUnit.StatHandler.DeathHandle();
+        }
     }
 
     private IEnumerator ApplyEffectPhase()
@@ -132,7 +140,7 @@ public class BattleManager : Singleton<BattleManager>, IMessageHandle
 
     private IEnumerator AttackPhase()
     {
-        if(_matchedDiamondDictionary.ContainsKey(DiamondType.Steal))
+        if (_matchedDiamondDictionary.ContainsKey(DiamondType.Steal))
         {
             yield return _currentUnit.AttackHandler.Steal(_currentUnit, _enemyUnit);
         }
@@ -152,5 +160,5 @@ public class BattleManager : Singleton<BattleManager>, IMessageHandle
         return _matchedDiamondDictionary[DiamondType.Steal];
     }
 
-    
+
 }

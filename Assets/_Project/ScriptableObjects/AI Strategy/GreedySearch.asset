@@ -18,3 +18,7 @@ MonoBehaviour:
   _ragePointScore: 5
   _healthPointScore: 5
   _magicPointScore: 1
+  _magicPointBonus: 20
+  _gainCardPoint: 300
+  _attackCardPoint: 200
+  _clearCardPoint: 100

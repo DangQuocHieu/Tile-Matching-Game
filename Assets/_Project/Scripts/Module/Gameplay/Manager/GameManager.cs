@@ -1,16 +1,42 @@
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class GameManager : Singleton<GameManager>, IMessageHandle
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void OnEnable()
     {
-        
+        MessageManager.AddSubscriber(GameMessageType.OnGameUnitDied, this);
     }
 
-    // Update is called once per frame
-    void Update()
+    void OnDisable()
     {
-        
+        MessageManager.RemoveSubscriber(GameMessageType.OnGameUnitDied, this);
+    }
+
+    public void Handle(Message message)
+    {
+        switch (message.type)
+        {
+            case GameMessageType.OnGameUnitDied:
+                Side side = (Side)message.data[0];
+                if (side == PlayerController.Instance.PlayerSide)
+                {
+                    OnGameLose();
+                }
+                else
+                {
+                    OnGameWin();
+                }
+                break;
+        }
+    }
+
+    private void OnGameWin()
+    {
+        MessageManager.SendMessage(new Message(GameMessageType.OnGameWin));
+    }
+
+    private void OnGameLose()
+    {
+        MessageManager.SendMessage(new Message(GameMessageType.OnGameLose));
     }
 }

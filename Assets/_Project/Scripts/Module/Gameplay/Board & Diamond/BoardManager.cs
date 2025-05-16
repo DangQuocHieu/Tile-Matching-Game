@@ -199,7 +199,7 @@ public class BoardManager : Singleton<BoardManager>, IMessageHandle
         HashSet<Vector2Int> diamondsInRow = new HashSet<Vector2Int>();
         for (int x = 0; x < _board.GetLength(1); x++)
         {
-            diamondsInRow.Add(new Vector2Int(row, x));
+            diamondsInRow.Add(new Vector2Int(x, row));
         }
         StartCoroutine(ClearHandler(diamondsInRow));
     }
@@ -210,7 +210,7 @@ public class BoardManager : Singleton<BoardManager>, IMessageHandle
         HashSet<Vector2Int> diamondsInCol = new HashSet<Vector2Int>();
         for (int y = 0; y < _board.GetLength(0); y++)
         {
-            diamondsInCol.Add(new Vector2Int(y, col));
+            diamondsInCol.Add(new Vector2Int(col, y));
         }
         StartCoroutine(ClearHandler(diamondsInCol));
     }
@@ -222,11 +222,11 @@ public class BoardManager : Singleton<BoardManager>, IMessageHandle
         HashSet<Vector2Int> diamondsInCross = new HashSet<Vector2Int>();
         for (int x = 0; x < _board.GetLength(1); x++)
         {
-            diamondsInCross.Add(new Vector2Int(row, x));
+            diamondsInCross.Add(new Vector2Int(x, row));
         }
         for (int y = 0; y < _board.GetLength(0); y++)
         {
-            diamondsInCross.Add(new Vector2Int(y, col));
+            diamondsInCross.Add(new Vector2Int(col, y));
         }
         StartCoroutine(ClearHandler(diamondsInCross));
     }

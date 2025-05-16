@@ -59,17 +59,17 @@ public class GameCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         PlayerCardController.Instance.DisableAllCard();
         TurnManager.Instance.PauseCurrentTurn();
-        BattleManager.Instance.CurrentUnit.StatHandler.AddMagicPoint(-_data.ManaPointToUse);
+        BattleManager.Instance.CurrentUnit.StatHandler.AddMagicPoint(-_data.MpPointToUse);
         BattleManager.Instance.CurrentUnit.StatHandler.AddRagePoint(-_data.RagePointToUse);
         yield return _data.CardEffectSO.Activate();
-        _data.CardEffectSO.OnComplete(gameObject);
+        Destroy(gameObject);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (_data.ManaPointToUse == 0 && _data.RagePointToUse == 0) return;
+        if (_data.MpPointToUse == 0 && _data.RagePointToUse == 0) return;
         _descriptionPanel.gameObject.SetActive(true);
-        _mpCostText.text = "Magic Point: " + _data.ManaPointToUse;
+        _mpCostText.text = "Magic Point: " + _data.MpPointToUse;
         _rpCostText.text = "Rage Point: " + _data.RagePointToUse;
     }
 

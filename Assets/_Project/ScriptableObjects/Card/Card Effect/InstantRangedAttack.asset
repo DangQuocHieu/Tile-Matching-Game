@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: InstantRangedAttack
   m_EditorClassIdentifier: 
   _applyDuration: 1
-  _effectValue: 500
+  _effectValue: 350
   _prefab: {fileID: 3626471431185666787, guid: 9bc7e03769410204c9de67e4aa3b2fd6, type: 3}
   yOffset: 3

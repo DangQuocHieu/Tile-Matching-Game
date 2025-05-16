@@ -9,7 +9,7 @@ public class ProjectileRangedAttackEffect : CardEffectSO
     [SerializeField] private float _yOffset = 2f;
     public override IEnumerator Activate()
     {
-        BoardManager.Instance.HideDiamondBoard(); 
+        BoardManager.Instance.HideDiamondBoard();
         GameUnit currentUnit = BattleManager.Instance.CurrentUnit;
         GameUnit enemyUnit = BattleManager.Instance.EnemyUnit;
         Vector3 spawnPos = currentUnit.transform.position + new Vector3(0, _yOffset, 0);
@@ -18,11 +18,7 @@ public class ProjectileRangedAttackEffect : CardEffectSO
         yield return new WaitForSeconds(_applyDuration);
         enemyUnit.StatHandler.TakeDamage(_effectValue);
         Destroy(projectileGO);
+        MessageManager.SendMessage(new Message(GameMessageType.OnApplyCardEffectEnd));
     }
 
-    public override void OnComplete(GameObject gameObject)
-    {
-        MessageManager.SendMessage(new Message(GameMessageType.OnApplyCardEffectEnd));
-        Destroy(gameObject);
-    }
 }

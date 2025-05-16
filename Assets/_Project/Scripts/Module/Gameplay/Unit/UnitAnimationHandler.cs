@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class UnitAnimationHandler : MonoBehaviour
@@ -9,7 +10,7 @@ public class UnitAnimationHandler : MonoBehaviour
     private string _runString = "Run";
     private string _meleeAttackString = "meleeAttackIndex";
     private string _hurtString = "Hurt";
-    private string _dieString = "Die";    
+    private string _dieString = "Die";
     void Awake()
     {
         _unitAnimator = GetComponent<Animator>();
@@ -39,8 +40,15 @@ public class UnitAnimationHandler : MonoBehaviour
         _unitAnimator.SetInteger(_meleeAttackString, -1);
     }
 
-    public void SetDieState()
+    public IEnumerator SetDieState()
     {
+        yield return new WaitForEndOfFrame();
         _unitAnimator.SetTrigger(_dieString);
+        while (!_unitAnimator.GetCurrentAnimatorStateInfo(0).IsName(_dieString.ToUpper()))
+        {
+            yield return null;
+        }
+        AnimatorStateInfo stateInfo = _unitAnimator.GetCurrentAnimatorStateInfo(0);
+        yield return new WaitForSeconds(stateInfo.length);
     }
 }

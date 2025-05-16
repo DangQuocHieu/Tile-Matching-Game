@@ -143,6 +143,22 @@ public class UnitStatHandler : MonoBehaviour
         MessageManager.SendMessage(new Message(GameMessageType.OnTakeDamage, new object[] { damage }));
     }
 
+    public IEnumerator DeathHandle()
+    {
+        if (_currentHealthPoint <= 0)
+        {
+            yield return _animationHandler.SetDieState();
+            Debug.Log("UNIT DIED");
+            Side side = GetComponent<GameUnit>().UnitSide;
+            MessageManager.SendMessage(new Message(GameMessageType.OnGameUnitDied, new object[] { side }));
+        }
+    }
+
+    public bool IsDeath()
+    {
+        return _currentHealthPoint <= 0;
+    }
+
     public void DealDamage(int damage)
     {
         BattleManager.Instance.EnemyUnit.StatHandler.TakeDamage(damage);
@@ -174,15 +190,15 @@ public class UnitStatHandler : MonoBehaviour
     public List<DiamondType> GetStealableTypes()
     {
         List<DiamondType> stealableTypes = new List<DiamondType>();
-        if(_currentHealthPoint > 0)
+        if (_currentHealthPoint > 0)
         {
             stealableTypes.Add(DiamondType.Health);
         }
-        if(_currentMagicPoint > 0)
+        if (_currentMagicPoint > 0)
         {
             stealableTypes.Add(DiamondType.MagicPoint);
         }
-        if(_currentRagePoint > 0)
+        if (_currentRagePoint > 0)
         {
             stealableTypes.Add(DiamondType.Rage);
         }

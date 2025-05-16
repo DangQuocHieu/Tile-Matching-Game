@@ -10,11 +10,6 @@ public class RageGainCardEffect : CardEffectSO
         MessageManager.SendMessage(new Message(GameMessageType.OnApplyGainCard, new object[] { DiamondType.Rage, _effectValue }));
         yield return new WaitForSeconds(_applyDuration);
         BattleManager.Instance.CurrentUnit.StatHandler.AddRagePoint(_effectValue);
-    }
-
-    public override void OnComplete(GameObject gameObject)
-    {
         MessageManager.SendMessage(new Message(GameMessageType.OnApplyCardEffectEnd));
-        Destroy(gameObject);
     }
 }

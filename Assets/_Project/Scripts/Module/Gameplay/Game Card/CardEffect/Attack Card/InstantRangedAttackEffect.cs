@@ -16,10 +16,6 @@ public class InstantRangedAttackEffect : CardEffectSO
         yield return new WaitForSeconds(_applyDuration);
         enemyUnit.StatHandler.TakeDamage(_effectValue);
         Destroy(prefabGO);
-    }
-    public override void OnComplete(GameObject gameObject)
-    {
         MessageManager.SendMessage(new Message(GameMessageType.OnApplyCardEffectEnd));
-        Destroy(gameObject);
     }
 }

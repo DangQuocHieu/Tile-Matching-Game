@@ -9,7 +9,8 @@ public class PlayerController : Singleton<PlayerController>, IMessageHandle
     [SerializeField] private GameObject _currentDiamond;
     public GameObject CurrentDiamond => _currentDiamond;
     [SerializeField] private bool _disableControl = true;
-    [SerializeField] private Side _side = Side.LeftSide;
+    [SerializeField] private Side _playerSide = Side.LeftSide;
+    public Side PlayerSide => _playerSide;
     [SerializeField] LayerMask _diamondLayer;
 
     private void OnEnable()
@@ -63,7 +64,7 @@ public class PlayerController : Singleton<PlayerController>, IMessageHandle
             case GameMessageType.OnTurnStart:
                 ResetDiamond();
                 Side currentSide = (Side)message.data[0];
-                if (_side == currentSide)
+                if (_playerSide == currentSide)
                 {
                     EnableControl();
                 }
