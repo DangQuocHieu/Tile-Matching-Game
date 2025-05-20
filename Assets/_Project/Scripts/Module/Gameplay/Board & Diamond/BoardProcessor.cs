@@ -134,7 +134,9 @@ public class BoardProcessor : MonoBehaviour
             }));
         }
         yield return sequence.Play().WaitForCompletion();
+        MessageManager.SendMessage(new Message(GameMessageType.OnDiamondsCleared));
         yield return new WaitForEndOfFrame();
+
     }
 
     public IEnumerator Swap(GameObject prev, GameObject curr, TweenCallback callback)
@@ -142,6 +144,20 @@ public class BoardProcessor : MonoBehaviour
         yield return _swapAnim.Swap(prev, curr, callback);
     }
 
+    public void ClearCrossBoardData(DiamondType[,] boardData, int row, int col)
+    {
+
+        for (int x = 0; x < boardData.GetLength(1); x++)
+        {
+            boardData[row, x] = DiamondType.None;
+        }
+
+        for (int y = 0; y < boardData.GetLength(1); y++)
+        {
+            boardData[y, col] = DiamondType.None;
+        }
+
+    }
 
     #region Method for find best move
     public void ClearDiamondData(HashSet<Vector2Int> allMatches, DiamondType[,] boardData)
@@ -151,6 +167,7 @@ public class BoardProcessor : MonoBehaviour
             boardData[item.y, item.x] = DiamondType.None;
         }
     }
+
 
     public void CollapseBoardData(DiamondType[,] boardData)
     {

@@ -112,7 +112,7 @@ public class BattleManager : Singleton<BattleManager>, IMessageHandle
         else _matchedDiamondDictionary[type]++;
     }
 
-    private IEnumerator CombatPhase()
+    public IEnumerator CombatPhase()
     {
         MessageManager.SendMessage(new Message(GameMessageType.OnCombatPhaseStart, new object[] { _matchedDiamondDictionary }));
         yield return new WaitForSeconds(1f);

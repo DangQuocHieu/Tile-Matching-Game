@@ -10,7 +10,6 @@ public class MeleeAttack : AttackStrategySO
     [SerializeField] private float _dashTime = 1;
     [SerializeField] private float _goBackDelay = 0.5f;
     [SerializeField] private float _attackDelay = 1f;
-    [SerializeField] private float _damageTriggerOffset;
     [SerializeField] private int _attackCount;
     [SerializeField] private float[] _xOffset;
     private Dictionary<int, float> _xOffsetDictionary = new Dictionary<int, float>();
@@ -31,7 +30,7 @@ public class MeleeAttack : AttackStrategySO
         xAttackPos = attacker.UnitSide == Side.LeftSide ? xAttackPos : -xAttackPos;
         attacker.AnimationHandler.SetRunState();
         yield return attacker.transform.DOMoveX(attacker.transform.position.x + xAttackPos, _dashTime).SetEase(Ease.Linear).WaitForCompletion();
-        yield return attacker.AnimationHandler.SetMeleeAttackState(_damageTriggerOffset, attackIndex);
+        yield return attacker.AnimationHandler.SetMeleeAttackState(attackIndex);
         yield return new WaitForSeconds(_goBackDelay);
         yield return Rotate(attacker.transform);
         attacker.AnimationHandler.SetRunState();

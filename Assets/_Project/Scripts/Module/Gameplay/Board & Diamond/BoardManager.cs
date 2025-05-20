@@ -14,8 +14,10 @@ public class BoardManager : Singleton<BoardManager>, IMessageHandle
     public Diamond[,] Board => _board;
 
     private DiamondType[,] _boardData;
-    public DiamondType[,] BoardData {
-        get {
+    public DiamondType[,] BoardData
+    {
+        get
+        {
             UpdateBoardData();
             return _boardData;
         }
@@ -28,7 +30,7 @@ public class BoardManager : Singleton<BoardManager>, IMessageHandle
 
     void Start()
     {
-        _boardData = new DiamondType[_boardWidth,_boardHeight]; 
+        _boardData = new DiamondType[_boardWidth, _boardHeight];
         _matchFinder = GetComponent<MatchFinder>();
         _boardProcessor = GetComponent<BoardProcessor>();
         GenerateBoard();
@@ -75,9 +77,7 @@ public class BoardManager : Singleton<BoardManager>, IMessageHandle
                 StartCoroutine(ProcessSwapping(previousDiamond, currentDiamond));
                 break;
             case GameMessageType.OnTurnStartDelay:
-                ShowDiamondBoard();
-                break;
-            case GameMessageType.OnApplyCardEffectEnd:
+                CheckValidBoard();
                 ShowDiamondBoard();
                 break;
             case GameMessageType.OnApplyGainCard:
@@ -118,6 +118,7 @@ public class BoardManager : Singleton<BoardManager>, IMessageHandle
         MessageManager.SendMessage(new Message(GameMessageType.OnProcessBoardStart));
         while (_allMatches != null && _allMatches.Count > 0)
         {
+
             yield return _boardProcessor.ClearDiamond(_allMatches, _board);
             yield return _boardProcessor.CollapseBoard(_board);
             yield return _boardProcessor.RefillBoard(_board, _diamondContainer);
@@ -125,15 +126,13 @@ public class BoardManager : Singleton<BoardManager>, IMessageHandle
             _allMatches = _matchFinder.FindMatches(_boardData);
 
         }
-        yield return SendBoardProcessedMessage();
+        yield return new WaitForSeconds(2f);
         HideDiamondBoard();
+        MessageManager.SendMessage(new Message(GameMessageType.OnBoardProcessed));
+
     }
 
-    private IEnumerator SendBoardProcessedMessage()
-    {
-        yield return new WaitForSeconds(2f);
-        MessageManager.SendMessage(new Message(GameMessageType.OnBoardProcessed));
-    }
+
 
     public void SwapDiamondValue(Vector3 prev, Vector3 curr, Diamond[,] board)
     {
@@ -182,6 +181,13 @@ public class BoardManager : Singleton<BoardManager>, IMessageHandle
         return validMoves;
     }
 
+    private void CheckValidBoard()
+    {
+        if (GenerateValidMoves().Count == 0)
+        {
+            GenerateBoard();
+        }
+    }
     public void ShowDiamondBoard()
     {
         _diamondContainer.gameObject.SetActive(true);
@@ -193,7 +199,7 @@ public class BoardManager : Singleton<BoardManager>, IMessageHandle
     }
 
     //Reuse for clear entire row and clear entire col method
-    public void ClearEntireRow(GameObject diamond)
+    public IEnumerator ClearEntireRow(GameObject diamond)
     {
         int row = (int)diamond.transform.position.y;
         HashSet<Vector2Int> diamondsInRow = new HashSet<Vector2Int>();
@@ -201,10 +207,10 @@ public class BoardManager : Singleton<BoardManager>, IMessageHandle
         {
             diamondsInRow.Add(new Vector2Int(x, row));
         }
-        StartCoroutine(ClearHandler(diamondsInRow));
+        yield return StartCoroutine(ClearHandler(diamondsInRow));
     }
 
-    public void ClearEntireCol(GameObject diamond)
+    public IEnumerator ClearEntireCol(GameObject diamond)
     {
         int col = (int)diamond.transform.position.x;
         HashSet<Vector2Int> diamondsInCol = new HashSet<Vector2Int>();
@@ -212,10 +218,10 @@ public class BoardManager : Singleton<BoardManager>, IMessageHandle
         {
             diamondsInCol.Add(new Vector2Int(col, y));
         }
-        StartCoroutine(ClearHandler(diamondsInCol));
+        yield return StartCoroutine(ClearHandler(diamondsInCol));
     }
 
-    public void CrossClear(GameObject diamond)
+    public IEnumerator CrossClear(GameObject diamond)
     {
         int row = (int)diamond.transform.position.y;
         int col = (int)diamond.transform.position.x;
@@ -228,7 +234,22 @@ public class BoardManager : Singleton<BoardManager>, IMessageHandle
         {
             diamondsInCross.Add(new Vector2Int(col, y));
         }
-        StartCoroutine(ClearHandler(diamondsInCross));
+        yield return StartCoroutine(ClearHandler(diamondsInCross));
+    }
+
+    public GameObject GetRandomDiamondInRow(int row)
+    {
+        return _board[row, UnityEngine.Random.Range(0, _board.GetLength(1))].gameObject;
+    }
+
+    public GameObject GetRandomDiamondInCol(int col)
+    {
+        return _board[UnityEngine.Random.Range(0, _board.GetLength(1)), col].gameObject;
+    }
+
+    public GameObject GetDiamondInCross(int row, int col)
+    {
+        return _board[row, col].gameObject;
     }
 
     private IEnumerator ClearHandler(HashSet<Vector2Int> diamondsToClear)
@@ -247,27 +268,27 @@ public class BoardManager : Singleton<BoardManager>, IMessageHandle
 
         else
         {
-            yield return SendBoardProcessedMessage();
+            yield return new WaitForSeconds(2f);
             HideDiamondBoard();
+            yield return BattleManager.Instance.CombatPhase();
         }
     }
 
     private void UpdateBoardData()
     {
-        for(int y = 0; y < _board.GetLength(0); y++)
+        for (int y = 0; y < _board.GetLength(0); y++)
         {
-            for(int x = 0; x < _board.GetLength(1); x++)
+            for (int x = 0; x < _board.GetLength(1); x++)
             {
-                _boardData[y,x] = _board[y, x].DiamondType;
+                _boardData[y, x] = _board[y, x].DiamondType;
             }
         }
     }
-    #region Method for find best move
     public void SwapDiamondType(Vector3 prev, Vector3 curr, DiamondType[,] boardData)
     {
         DiamondType temp = boardData[(int)prev.y, (int)prev.x];
         boardData[(int)prev.y, (int)prev.x] = boardData[(int)curr.y, (int)curr.x];
         boardData[(int)curr.y, (int)curr.x] = temp;
     }
-    #endregion
+
 }

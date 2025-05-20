@@ -19,7 +19,6 @@ public class PlayerCardController : Singleton<PlayerCardController>, IMessageHan
     void OnEnable()
     {
         MessageManager.AddSubscriber(GameMessageType.OnProcessBoardStart, this);
-        MessageManager.AddSubscriber(GameMessageType.OnApplyCardEffectEnd, this);
         MessageManager.AddSubscriber(GameMessageType.OnTurnStart, this);
         MessageManager.AddSubscriber(GameMessageType.OnCurrentTurnEnd, this);
     }
@@ -27,7 +26,6 @@ public class PlayerCardController : Singleton<PlayerCardController>, IMessageHan
     void OnDisable()
     {
         MessageManager.RemoveSubscriber(GameMessageType.OnProcessBoardStart, this);
-        MessageManager.RemoveSubscriber(GameMessageType.OnApplyCardEffectEnd, this);
         MessageManager.RemoveSubscriber(GameMessageType.OnTurnStart, this);
         MessageManager.RemoveSubscriber(GameMessageType.OnCurrentTurnEnd, this);
     }
@@ -86,7 +84,7 @@ public class PlayerCardController : Singleton<PlayerCardController>, IMessageHan
         _currentRagePoint = transform.GetChild(0).GetComponent<UnitStatHandler>().CurrentRagePoint;
         foreach (var card in _gameCards)
         {
-            if (card != null && _currentManaPoint >= card.Data.MpPointToUse && _currentRagePoint >= card.Data.RagePointToUse) 
+            if (card != null && _currentManaPoint >= card.Data.MagicPointCost && _currentRagePoint >= card.Data.RagePointCost) 
             {
                 card.EnableCard();
             }

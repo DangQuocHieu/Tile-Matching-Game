@@ -43,6 +43,7 @@ public class CharacterSelectionScreenHUD : MonoBehaviour
 
     private void AddButtonListener()
     {
+        
         _cardSelectButton.onClick.AddListener(()=>{
             ScreenManager.Instance.ShowScreen(ScreenKey.CardSelect);
         });

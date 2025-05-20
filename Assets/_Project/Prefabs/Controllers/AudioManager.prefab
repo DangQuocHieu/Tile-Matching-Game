@@ -45,7 +45,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _audioMixer: {fileID: 0}
-  _sfxAudios: []
+  _sfxAudios:
+  - AudioName: 3
+    Clip: {fileID: 8300000, guid: 48bea13d38a12794cb7955567d250fb0, type: 3}
+    Volume: 1
+    Pitch: 1
+    Priority: 256
   _musicAudios:
   - AudioName: 0
     Clip: {fileID: 8300000, guid: 4e4fb4f72a80a8b4a8734a19833cf365, type: 3}
@@ -54,11 +59,37 @@ MonoBehaviour:
     Priority: 128
   - AudioName: 1
     Clip: {fileID: 8300000, guid: d767d596061843a41881627c78916cdc, type: 3}
-    Volume: 1
+    Volume: 0.6
     Pitch: 1
     Priority: 128
   - AudioName: 2
     Clip: {fileID: 8300000, guid: 8d75b459a4621bc45b0d896eecf276dc, type: 3}
+    Volume: 1
+    Pitch: 1
+    Priority: 128
+  _matchComboAudios:
+  - AudioName: 3
+    Clip: {fileID: 8300000, guid: 48bea13d38a12794cb7955567d250fb0, type: 3}
+    Volume: 1
+    Pitch: 1
+    Priority: 128
+  - AudioName: 3
+    Clip: {fileID: 8300000, guid: 51e07ff08f2649447bcff0ecb83b4959, type: 3}
+    Volume: 1
+    Pitch: 1
+    Priority: 128
+  - AudioName: 3
+    Clip: {fileID: 8300000, guid: aaf3c58641ad9a849959aca4fa9e87de, type: 3}
+    Volume: 1
+    Pitch: 1
+    Priority: 128
+  - AudioName: 3
+    Clip: {fileID: 8300000, guid: 9516d90b497633f42aee90303c14d07d, type: 3}
+    Volume: 1
+    Pitch: 1
+    Priority: 128
+  - AudioName: 3
+    Clip: {fileID: 8300000, guid: 5ddd79d072ce33745a790a9ec60f6fb2, type: 3}
     Volume: 1
     Pitch: 1
     Priority: 128

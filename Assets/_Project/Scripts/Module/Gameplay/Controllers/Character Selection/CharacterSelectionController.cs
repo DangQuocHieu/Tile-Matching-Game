@@ -20,9 +20,10 @@ public class CharacterSelectionController : Singleton<CharacterSelectionControll
     public void Init()
     {
         _gridColumn = _gridGroup.constraintCount;
+        if(_gridGroup != null)
         _characterButton = _gridGroup.GetComponentsInChildren<CharacterSelectionButton>().ToList();
         SetUpSelector();
-    }
+    }   
 
     void OnEnable()
     {
@@ -36,6 +37,7 @@ public class CharacterSelectionController : Singleton<CharacterSelectionControll
 
     public void SetUpSelector()
     {
+        if (_playerSelector == null || _enemySelector == null) return;
         UpdateSelectorPosition();
         _playerSelector.gameObject.SetActive(true);
         _enemySelector.gameObject.SetActive(true);
@@ -53,6 +55,8 @@ public class CharacterSelectionController : Singleton<CharacterSelectionControll
     public void UpdateSelectorPosition()
     {
         if(_characterButton.Count == 0) return;
+        if (_playerSelector == null) return;
+        if (_enemySelector == null) return;
         _playerSelector.position = _characterButton[_playerIndex].transform.position;
         _enemySelector.position = _characterButton[_enemyIndex].transform.position;
     }

@@ -33,11 +33,13 @@ public class GameEndScreen : UIScreen
     {
         _gobackButton.onClick.AddListener(() =>
         {
+            ScreenManager.Instance.InitScreen();
             SceneManager.LoadSceneAsync("Character Selection Scene");
         });
 
         _menuButton.onClick.AddListener(() =>
         {
+            ScreenManager.Instance.InitScreen();
             SceneManager.LoadSceneAsync("Menu Scene");
         });
         _restartButton.onClick.AddListener(() =>

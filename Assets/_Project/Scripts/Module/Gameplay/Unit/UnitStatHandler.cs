@@ -1,16 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.Mathematics;
+using System.Data.Common;
 using UnityEngine;
-using UnityEngine.Experimental.GlobalIllumination;
+using UnityEngine.Rendering;
 
 public class UnitStatHandler : MonoBehaviour
 {
     [Header("Stat SO")]
     [SerializeField] private UnitStat _stat;
     public UnitStat Stat => _stat;
-
     [Header("Stat")]
     [SerializeField] private int _currentHealthPoint;
     public int CurrentHealthPoint => _currentHealthPoint;
@@ -25,9 +23,9 @@ public class UnitStatHandler : MonoBehaviour
     [SerializeField] private GameEffectSO[] _diamondEffects;
     private Dictionary<DiamondType, GameEffectSO> _effectDictionary = new Dictionary<DiamondType, GameEffectSO>();
     private Dictionary<DiamondType, int> _baseValue = new Dictionary<DiamondType, int>();
-    // [SerializeField] private GameObject _shieldIcon;
-
+    [SerializeField] private GameObject _shieldIcon;
     private UnitAnimationHandler _animationHandler;
+
 
     void Start()
     {
@@ -35,13 +33,13 @@ public class UnitStatHandler : MonoBehaviour
         InitializeStat();
         InitializeEffectDictionary();
         InitializeBaseValueDictionary();
-        // InitShieldIconPosition();
     }
 
     void Update()
     {
-        // DisplayShieldIcon();
+        DisplayShieldIcon();
     }
+
     private void InitializeStat()
     {
         _currentHealthPoint = _stat.MaxHealthPoint;
@@ -65,15 +63,11 @@ public class UnitStatHandler : MonoBehaviour
         _baseValue.Add(DiamondType.Shield, _stat.BaseShieldPoint);
     }
 
-    // private void InitShieldIconPosition()
-    // {
-    //     _shieldIcon.transform.localPosition = Vector3.one;
-    // }
-    // private void DisplayShieldIcon()
-    // {
-    //     if(_currentShieldPoint != 0) _shieldIcon.gameObject.SetActive(true);
-    //     else _shieldIcon.gameObject.SetActive(false);
-    // }
+    private void DisplayShieldIcon()
+    {
+        if (_currentShieldPoint != 0) _shieldIcon.gameObject.SetActive(true);
+        else _shieldIcon.gameObject.SetActive(false);
+    }
 
     public void AddHealthPoint(int healthToAdd)
     {
@@ -107,7 +101,6 @@ public class UnitStatHandler : MonoBehaviour
             MessageManager.SendMessage(new Message(GameMessageType.OnApplyEffectStart, new object[] { diamondType, value }));
         }
     }
-
     public int CalculateDamage(int value)
     {
         int damage = value * _stat.BaseDamage;
@@ -203,5 +196,19 @@ public class UnitStatHandler : MonoBehaviour
             stealableTypes.Add(DiamondType.Rage);
         }
         return stealableTypes;
+    }
+
+    public int GetStolenValue(DiamondType type, int value)
+    {
+        switch (type)
+        {
+            case DiamondType.Health:
+                return Mathf.Min(value, _currentHealthPoint);
+            case DiamondType.MagicPoint:
+                return Mathf.Min(value, _currentMagicPoint);
+            case DiamondType.Rage:
+                return Mathf.Min(value, _currentRagePoint);
+        }
+        return -1;
     }
 }

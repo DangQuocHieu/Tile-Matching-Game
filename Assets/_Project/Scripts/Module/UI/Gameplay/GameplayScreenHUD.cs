@@ -19,13 +19,11 @@ public class GameplayScreenHUD : MonoBehaviour, IMessageHandle
     [SerializeField] RectTransform _turnDataContainer;
     [SerializeField] RectTransform _matchedDiamondUIPrefab;
     [SerializeField] Image _cardImage;
-
     [SerializeField] private Sprite[] _diamondSprites;
     [SerializeField] private DiamondType[] _diamondTypes;
     private Dictionary<DiamondType, Sprite> _spriteDictionary = new Dictionary<DiamondType, Sprite>();
     private Dictionary<DiamondType, TextMeshProUGUI> _floatingTextDictionary = new Dictionary<DiamondType, TextMeshProUGUI>();
-    private int _currentIndex = 0;
-
+    [SerializeField] private Button _pauseButton;
     [Header("Stat Bar")]
     [SerializeField] private StatBarHUD _playerStatBarHUD;
     [SerializeField] private StatBarHUD _enemyStatBarHUD;
@@ -59,6 +57,9 @@ public class GameplayScreenHUD : MonoBehaviour, IMessageHandle
         MessageManager.AddSubscriber(GameMessageType.OnTakeDamage, this);
         MessageManager.AddSubscriber(GameMessageType.OnApplyGainCard, this);
         MessageManager.AddSubscriber(GameMessageType.OnValueStolen, this);
+        MessageManager.AddSubscriber(GameMessageType.OnCardUsing, this);
+        MessageManager.AddSubscriber(GameMessageType.OnApplyCardEffectEnd, this);
+        MessageManager.AddSubscriber(GameMessageType.OnGameContinued, this);
 
 
     }
@@ -66,6 +67,7 @@ public class GameplayScreenHUD : MonoBehaviour, IMessageHandle
     void Start()
     {
         InitFloatingTextDictionary();
+        AddButonListener();
     }
 
     private void Update()
@@ -83,6 +85,19 @@ public class GameplayScreenHUD : MonoBehaviour, IMessageHandle
         MessageManager.RemoveSubscriber(GameMessageType.OnTakeDamage, this);
         MessageManager.RemoveSubscriber(GameMessageType.OnApplyGainCard, this);
         MessageManager.RemoveSubscriber(GameMessageType.OnValueStolen, this);
+        MessageManager.RemoveSubscriber(GameMessageType.OnCardUsing, this);
+        MessageManager.RemoveSubscriber(GameMessageType.OnApplyCardEffectEnd, this);
+        MessageManager.RemoveSubscriber(GameMessageType.OnGameContinued, this);
+    }
+
+    private void AddButonListener()
+    {
+        _pauseButton.onClick.AddListener(() =>
+        {
+
+            MessageManager.SendMessage(new Message(GameMessageType.OnGamePaused));
+            _pauseButton.gameObject.SetActive(false);
+        });
     }
 
     public void Handle(Message message)
@@ -104,7 +119,6 @@ public class GameplayScreenHUD : MonoBehaviour, IMessageHandle
                 UpdateTimerText(turnDuration);
                 GetCurrentUnit();
                 ResetMatchDiamondUI();
-                ResetIndex();
                 break;
             case GameMessageType.OnApplyEffectStart or GameMessageType.OnApplyGainCard:
                 {
@@ -132,6 +146,13 @@ public class GameplayScreenHUD : MonoBehaviour, IMessageHandle
                     ShowFloatingText(type, value, showInCurrentUnitPosition: false);
                     break;
                 }
+            case GameMessageType.OnCardUsing:
+                Sprite sprite = (Sprite)message.data[0];
+                ShowCardImage(sprite);
+                break;
+            case GameMessageType.OnGameContinued:
+                _pauseButton.gameObject.SetActive(true);
+                break;
         }
     }
 
@@ -179,6 +200,9 @@ public class GameplayScreenHUD : MonoBehaviour, IMessageHandle
 
     private void ShowCardImage(Sprite sprite)
     {
+        float yOffset = 4.5f;
+        Vector3 position = BattleManager.Instance.CurrentUnit.transform.parent.position + new Vector3(0, yOffset, 0);
+        _cardImage.transform.position = Camera.main.WorldToScreenPoint(position);
         _cardImage.gameObject.SetActive(true);
         _cardImage.sprite = sprite;
     }
@@ -208,11 +232,6 @@ public class GameplayScreenHUD : MonoBehaviour, IMessageHandle
         {
             Destroy(child.gameObject);
         }
-    }
-
-    private void ResetIndex()
-    {
-        _currentIndex = 0;
     }
 
     private void GetCurrentUnit()

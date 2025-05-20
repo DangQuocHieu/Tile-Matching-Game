@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2480461428276588590
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6447968946644500187}
+  - component: {fileID: 6604048763761998470}
+  m_Layer: 0
+  m_Name: Background Selection Controller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6447968946644500187
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2480461428276588590}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6604048763761998470
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2480461428276588590}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0df37a97c99dac143b5a41921b9a4aa7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _bgSprites:
+  - {fileID: 8571398176641795941, guid: 20ed170e83300dc4cbb1b94400fe96d7, type: 3}
+  - {fileID: 3973025444014793835, guid: 258ac1ea65270f447962cc1dcf83f6fc, type: 3}
+  - {fileID: 4043790714024758673, guid: 779b71852e7d1ad4fba119805129a7f6, type: 3}
+  - {fileID: -568393484021510726, guid: dba8836d91854c140bf58b04439e33e8, type: 3}
+  _bgSelectorPrefab: {fileID: 8830346823792973840, guid: 80fdc81db9cc0e74ea68d60c58974494, type: 3}
+  _bgSelectorContainer: {fileID: 0}
+  _comfirmIcon: {fileID: 0}

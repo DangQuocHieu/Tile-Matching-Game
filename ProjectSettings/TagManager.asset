@@ -53,6 +53,9 @@ TagManager:
   - name: Attack
     uniqueID: 3378538189
     locked: 0
+  - name: Shield
+    uniqueID: 2584193193
+    locked: 0
   - name: ParticleSystem
     uniqueID: 1169174299
     locked: 0

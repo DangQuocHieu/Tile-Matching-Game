@@ -31,12 +31,12 @@ public class UnitAnimationHandler : MonoBehaviour
         _unitAnimator.SetTrigger(_hurtString);
     }
 
-    public IEnumerator SetMeleeAttackState(float damageTriggerOffset, int index)
+    public IEnumerator SetMeleeAttackState(int index)
     {
-        yield return new WaitForEndOfFrame();
         _unitAnimator.SetInteger(_meleeAttackString, index);
+        yield return new WaitForNextFrameUnit();
         AnimatorStateInfo stateInfo = _unitAnimator.GetCurrentAnimatorStateInfo(0);
-        yield return new WaitForSeconds(stateInfo.length - damageTriggerOffset);
+        yield return new WaitForSeconds(stateInfo.length);
         _unitAnimator.SetInteger(_meleeAttackString, -1);
     }
 

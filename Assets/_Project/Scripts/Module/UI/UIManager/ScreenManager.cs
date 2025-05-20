@@ -19,6 +19,7 @@ public class ScreenManager : PersistentSingleton<ScreenManager>, IMessageHandle
         MessageManager.AddSubscriber(GameMessageType.OnGameWin, this);
         MessageManager.AddSubscriber(GameMessageType.OnGameLose, this);
         MessageManager.AddSubscriber(GameMessageType.OnGameRestart, this);
+        MessageManager.AddSubscriber(GameMessageType.OnGamePaused, this);
     }
 
     private void OnDisable()
@@ -26,6 +27,7 @@ public class ScreenManager : PersistentSingleton<ScreenManager>, IMessageHandle
         MessageManager.RemoveSubscriber(GameMessageType.OnGameWin, this);
         MessageManager.RemoveSubscriber(GameMessageType.OnGameLose, this);
         MessageManager.RemoveSubscriber(GameMessageType.OnGameRestart, this);
+        MessageManager.RemoveSubscriber(GameMessageType.OnGamePaused, this);
     }
 
     private void InitScreenDictionary()
@@ -37,12 +39,14 @@ public class ScreenManager : PersistentSingleton<ScreenManager>, IMessageHandle
         }
     }
 
-    private void InitScreen()
+    public void InitScreen()
     {
         foreach (var screenKey in _screenDictionary.Keys)
         {
             _screenDictionary[screenKey].gameObject.SetActive(false);
         }
+        _stackScreen.Clear();
+        _stackScreen = new Stack<ScreenKey>();
     }
     public void ShowScreen(ScreenKey _keyToShow)
     {
@@ -82,6 +86,10 @@ public class ScreenManager : PersistentSingleton<ScreenManager>, IMessageHandle
 
             case GameMessageType.OnGameRestart:
                 InitScreen();
+                break;
+
+            case GameMessageType.OnGamePaused:
+                ShowScreen(ScreenKey.Pause);
                 break;
         }
     }

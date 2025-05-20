@@ -6,6 +6,7 @@ public enum AudioName
     MenuMusic,
     GamePlayMusic,
     CharacterSelectionMusic,
+    Match3FX,
 }
 
 [System.Serializable]

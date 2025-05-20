@@ -14,6 +14,7 @@ public enum GameMessageType
     OnBoardProcessed, //when completely
     OnCombatPhaseStart,
     OnApplyEffectStart,
+    OnCardUsing,
     OnApplyCardEffectEnd,
     OnTakeDamage,
     OnCurrentTurnPaused,
@@ -26,6 +27,9 @@ public enum GameMessageType
     OnGameWin,
     OnGameLose,
     OnGameRestart,
+    OnDiamondsCleared,
+    OnGamePaused, 
+    OnGameContinued
 }
 
 public class Message

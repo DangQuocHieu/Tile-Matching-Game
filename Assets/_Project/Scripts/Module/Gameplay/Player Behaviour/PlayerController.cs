@@ -19,6 +19,7 @@ public class PlayerController : Singleton<PlayerController>, IMessageHandle
         MessageManager.AddSubscriber(GameMessageType.OnDiamondSwappedFail, this);
         MessageManager.AddSubscriber(GameMessageType.OnDiamondSwapped, this);
         MessageManager.AddSubscriber(GameMessageType.OnProcessBoardStart, this);
+        MessageManager.AddSubscriber(GameMessageType.OnCardUsing, this);
     }
 
     private void OnDisable()
@@ -27,6 +28,7 @@ public class PlayerController : Singleton<PlayerController>, IMessageHandle
         MessageManager.RemoveSubscriber(GameMessageType.OnDiamondSwappedFail, this);
         MessageManager.RemoveSubscriber(GameMessageType.OnDiamondSwapped, this);
         MessageManager.RemoveSubscriber(GameMessageType.OnProcessBoardStart, this);
+        MessageManager.RemoveSubscriber(GameMessageType.OnCardUsing, this);
     }
     void Update()
     {
@@ -78,6 +80,9 @@ public class PlayerController : Singleton<PlayerController>, IMessageHandle
                 break;
             case GameMessageType.OnProcessBoardStart:
                 DisableControl();
+                break;
+            case GameMessageType.OnCardUsing:
+                ResetDiamond();
                 break;
         }
     }

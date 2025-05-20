@@ -19,6 +19,6 @@ MonoBehaviour:
   _healthPointScore: 5
   _magicPointScore: 1
   _magicPointBonus: 20
-  _gainCardPoint: 300
-  _attackCardPoint: 200
-  _clearCardPoint: 100
+  _gainCardPoint: 1
+  _attackCardPoint: 2
+  _clearCardPoint: 3

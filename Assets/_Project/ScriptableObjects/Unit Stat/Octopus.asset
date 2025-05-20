@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: Octopus
   m_EditorClassIdentifier: 
   _unitId: Octopus
-  _maxHealthPoint: 500
+  _maxHealthPoint: 2800
   _maxManaPoint: 200
   _maxRagePoint: 200
-  _baseHealthPoint: 20
+  _baseHealthPoint: 30
   _baseMagicPoint: 20
   _baseRagePoint: 20
-  _baseDamage: 100
-  _baseShieldPoint: 20
+  _baseDamage: 91
+  _baseShieldPoint: 24
   _baseStealPoint: 22
   _ragePointToIncreaseDamage: 100
   _damageScale: 1.25

@@ -18,7 +18,7 @@ public class ProjectileRangedAttackEffect : CardEffectSO
         yield return new WaitForSeconds(_applyDuration);
         enemyUnit.StatHandler.TakeDamage(_effectValue);
         Destroy(projectileGO);
-        MessageManager.SendMessage(new Message(GameMessageType.OnApplyCardEffectEnd));
+        BoardManager.Instance.ShowDiamondBoard();
     }
 
 }

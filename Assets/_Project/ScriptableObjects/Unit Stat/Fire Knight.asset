@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: Fire Knight
   m_EditorClassIdentifier: 
   _unitId: Fire Knight
-  _maxHealthPoint: 500
+  _maxHealthPoint: 2500
   _maxManaPoint: 200
   _maxRagePoint: 200
-  _baseHealthPoint: 20
-  _baseMagicPoint: 20
-  _baseRagePoint: 20
-  _baseDamage: 100
+  _baseHealthPoint: 31
+  _baseMagicPoint: 23
+  _baseRagePoint: 26
+  _baseDamage: 98
   _baseShieldPoint: 20
-  _baseStealPoint: 22
+  _baseStealPoint: 32
   _ragePointToIncreaseDamage: 100
   _damageScale: 1.25

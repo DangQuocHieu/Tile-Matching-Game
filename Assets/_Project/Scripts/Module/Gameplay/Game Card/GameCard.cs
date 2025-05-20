@@ -57,20 +57,22 @@ public class GameCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     }
     public IEnumerator ApplyCardEffect()
     {
+        MessageManager.SendMessage(new Message(GameMessageType.OnCardUsing, new object[] { _data.CardSprite }));
         PlayerCardController.Instance.DisableAllCard();
         TurnManager.Instance.PauseCurrentTurn();
-        BattleManager.Instance.CurrentUnit.StatHandler.AddMagicPoint(-_data.MpPointToUse);
-        BattleManager.Instance.CurrentUnit.StatHandler.AddRagePoint(-_data.RagePointToUse);
+        BattleManager.Instance.CurrentUnit.StatHandler.AddMagicPoint(-_data.MagicPointCost);
+        BattleManager.Instance.CurrentUnit.StatHandler.AddRagePoint(-_data.RagePointCost);
         yield return _data.CardEffectSO.Activate();
-        Destroy(gameObject);
+        MessageManager.SendMessage(new Message(GameMessageType.OnApplyCardEffectEnd));
+        gameObject.SetActive(false);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (_data.MpPointToUse == 0 && _data.RagePointToUse == 0) return;
+        if (_data.MagicPointCost == 0 && _data.RagePointCost == 0) return;
         _descriptionPanel.gameObject.SetActive(true);
-        _mpCostText.text = "Magic Point: " + _data.MpPointToUse;
-        _rpCostText.text = "Rage Point: " + _data.RagePointToUse;
+        _mpCostText.text = "Magic Point: " + _data.MagicPointCost;
+        _rpCostText.text = "Rage Point: " + _data.RagePointCost;
     }
 
     public void OnPointerExit(PointerEventData eventData)

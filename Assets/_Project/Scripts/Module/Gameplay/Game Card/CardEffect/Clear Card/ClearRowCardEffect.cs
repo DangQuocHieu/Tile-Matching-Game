@@ -4,17 +4,22 @@ using UnityEngine;
 public class ClearRowCardEffect : CardEffectSO
 {
     [SerializeField] private Side _playerSide;
-    
+
     public override IEnumerator Activate()
     {
         Side currentSide = TurnManager.Instance.CurrentSide;
-        if(currentSide == _playerSide)
+        if (currentSide == _playerSide)
         {
-            PlayerController.Instance.ResetDiamond();
-            yield return new WaitUntil(() => PlayerController.Instance.CurrentDiamond != default);
+            yield return new WaitUntil(() => PlayerController.Instance.CurrentDiamond != null);
             PlayerController.Instance.DisableControl();
             DiamondHighlight.Instance.UnHighlight();
-            BoardManager.Instance.ClearEntireRow(PlayerController.Instance.CurrentDiamond);
+            yield return BoardManager.Instance.ClearEntireRow(PlayerController.Instance.CurrentDiamond);
+        }
+        else
+        {
+            int bestRow = EnemyController.Instance.GreedySearch.FindBestRow();
+            GameObject diamond = BoardManager.Instance.GetRandomDiamondInRow(bestRow);
+            yield return BoardManager.Instance.ClearEntireRow(diamond);
         }
     }
 }
